@@ -14,7 +14,9 @@ public class RuleParser {
         this.fileName = "";
     }
 
-    public void setUp(String fileName, ArrayList<Sensore> listaSensori, ArrayList<Attuatore> listaAttuatori) {
+
+    // TODO: 09/04/2020 Perche avevo in mente di usare le liste di dispositivi?(Non per Mattia)
+    public void setUp(String fileName) {
         this.fileName = fileName;
         this.timer = new MyTimer("TimerThread");
     }
@@ -42,6 +44,7 @@ public class RuleParser {
 
     /**
      * Viene effettuata la lettura da file per recuperare la lista delle regole create dal fruitore.
+     *
      * @return la lettura delle regole dal file dell'unità immobiliare corrente
      */
     public String readRuleFromFile() {
@@ -75,7 +78,8 @@ public class RuleParser {
 
     /**
      * Il metodo applica le regole presenti nella sezione conseguente di una regola quando l'antecedente risulta true.
-     * @param listaSensori dell'unità immobiliare sulla quale si stanno effettuando le operazioni
+     *
+     * @param listaSensori   dell'unità immobiliare sulla quale si stanno effettuando le operazioni
      * @param listaAttuatori dell'unità immobiliare sulla quale si stanno effettuando le operazioni
      */
     public void applyRules(ArrayList<Sensore> listaSensori, ArrayList<Attuatore> listaAttuatori) {
@@ -140,10 +144,10 @@ public class RuleParser {
         }
 
         String regoleModificate = "";
-        for (int i = 0; i < letto.length-1; i++) {
+        for (int i = 0; i < letto.length - 1; i++) {
             regoleModificate += letto[i] + "\n";
         }
-        regoleModificate += letto[letto.length-1];
+        regoleModificate += letto[letto.length - 1];
         writeRuleToFile(regoleModificate, false);
     }
 
@@ -151,7 +155,7 @@ public class RuleParser {
         String[] regole = readRuleFromFile().split("\n");
         for (int i = 0; i < regole.length; i++) {
             if (regole[i].contains(nomeDispositivo)) {
-                if(verificaAbilitazione(regole[i], listaSensori, listaAttuatori)) {
+                if (verificaAbilitazione(regole[i], listaSensori, listaAttuatori)) {
                     cambiaAbilitazioneRegola(regole[i], true);
                 }
             }
@@ -169,15 +173,17 @@ public class RuleParser {
 
     /**
      * Il metodo isola una singola azione e la passa al metodo che applica le singole regole.
-     * @param token sezione di azione da eseguire
+     *
+     * @param token          sezione di azione da eseguire
      * @param listaAttuatori dell'unità immobiliare sulla quale si stanno effettuando le operazioni
      */
     private void applyActions(String token, ArrayList<Attuatore> listaAttuatori) {
         for (String tok : token.split(" ; "))
             if (tok.contains("start")) {
                 Date data = getTime(tok.split(" , ")[1].split(" := ")[1]);
-                if (data.compareTo(Calendar.getInstance().getTime()) > 0)
-                    this.timer.schedule(new AzioneProgrammata(listaAttuatori, tok.split(" , ")[0]), data);
+                // TODO: 10/04/2020 togliere if in v4
+                this.timer.schedule(new AzioneProgrammata(listaAttuatori, tok.split(" , ")[0]), data);
+
             } else {
                 apply(tok, listaAttuatori);
             }
@@ -196,7 +202,8 @@ public class RuleParser {
 
     /**
      * Il metodo applica la regola vera e propria, settando il nuovo valoro della modalità operativa dell'attuatore.
-     * @param act azione da effettuare.
+     *
+     * @param act            azione da effettuare.
      * @param listaAttuatori dell'unità immobiliare sulla quale si stanno effettuando le operazioni
      */
     private synchronized void apply(String act, ArrayList<Attuatore> listaAttuatori) {
@@ -230,7 +237,8 @@ public class RuleParser {
     /**
      * Il metodo utilizza gli operatori logici per separare la stringa delle condizioni e verificare singolarmente le varie operazioni e poi applicare
      * gli operatori logici di AND e OR.
-     * @param cos è la condizione affinchè una regola si verifichi.
+     *
+     * @param cos          è la condizione affinchè una regola si verifichi.
      * @param listaSensori dell'unità immobiliare sulla quale si stanno effettuando le operazioni
      * @return
      */
@@ -284,8 +292,9 @@ public class RuleParser {
     }
 
     /**
-     *Il metodo viene usato per acquisire i valori dei sensori in gioco e per confrontare l'effettiva operazione tra due sensori o tra un sensore e un valore numerico costante
+     * Il metodo viene usato per acquisire i valori dei sensori in gioco e per confrontare l'effettiva operazione tra due sensori o tra un sensore e un valore numerico costante
      * o un astringa nel caso di un'informazione non numerica
+     *
      * @param listaSensori dell'unità immobiliare sulla quale si stanno effettuando le operazioni
      * @return il risultato dell'operazione in termini di true se le operazioni sono verificate altrimenti false se sono false
      */
@@ -378,9 +387,10 @@ public class RuleParser {
 
     /**
      * Il metodo effettua il risultato booleano dell'operazione logica tra i due valori con l'operatore designato.
+     *
      * @param operator è l'operatore per il confronto della regola
-     * @param value1 valore di sx dell'operazione
-     * @param value2 valore di dx dell'operazione
+     * @param value1   valore di sx dell'operazione
+     * @param value2   valore di dx dell'operazione
      * @return il confronto dell' operazione
      */
     private boolean evalOp(String operator, int value1, int value2) {

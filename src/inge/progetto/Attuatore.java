@@ -1,5 +1,6 @@
 package inge.progetto;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -12,7 +13,7 @@ import java.util.HashMap;
  *
  * @author Parampal Singh, Mattia Nodari
  */
-public class Attuatore {
+public class Attuatore implements Serializable {
 
     /**
      * nome dell'attuatore
@@ -129,12 +130,14 @@ public class Attuatore {
             System.out.println("*** Sei già in questa modalità ***");
             return;
         }
+        //Giusto perche l'utente lo sappia
+        // TODO: 10/04/2020 aggiungere in v3 e v4
+        if (this.listaComandati.isEmpty()) {
+            System.out.println("--- L'attuatore non comanda alcun artefatto! ---");
+        }
         for (ModalitaOperativa mod : this.getCategoria().getModalita()) {
             if(mod.getValore().equals(nuovaModalita)) {
                 this.modalitaAttuale = nuovaModalita;
-
-
-
                 modificaArtefatti(new ModalitaOperativa(nuovaModalita)); //conseguente cambiamento di stato degli artefatti comandati
 
                 System.out.println("*** Modalità modificata correttamente ***");
@@ -154,17 +157,35 @@ public class Attuatore {
      */
     public void setModalitaAttuale(String nuovaModalita, String nomeParametro, int valoreParametro) {
         if(this.modalitaAttuale.equals(nuovaModalita)) {
-            System.out.println("Sei già in questa modalità");
+            System.out.println("+ Sei già in questa modalità +");
         }
+        //Giusto perche l'utente lo sappia (piu importante qua per il problema citato nel DaFarsi sopra citato)
+        // TODO: 10/04/2020 aggiugere in v3,v4
+        if(this.listaComandati.isEmpty()) {
+            System.out.println("--- L'attuatore non comanda alcun artefatto! ---");
+        }
+
+        //TODO: Implementare magari con un metodo getModalita che usa clone per cateAtt come cateSens(Non per Mattia)
         for (ModalitaOperativa mod : this.getCategoria().getModalita()) {
             if(mod.getValore().equals(nuovaModalita)) {
                 this.modalitaAttuale = nuovaModalita;
 
-                HashMap<String, Integer> nuoviParam = (HashMap<String, Integer>) mod.getParametri().clone();
-                ModalitaOperativa nuovaMod = new ModalitaOperativa(nuovaModalita, nuoviParam);
-                nuovaMod.setParametro(nomeParametro, valoreParametro);
+                /*HashMap<String, Integer> nuoviParam = new HashMap<>();
+                HashMap<String,Integer> vecchiParam = mod.getParametri();
 
-                modificaArtefatti(nuovaMod);
+                for (String key : vecchiParam.keySet()) {
+                    nuoviParam.put(key,vecchiParam.get(key));
+                }
+                ModalitaOperativa nuovaMod = new ModalitaOperativa(nuovaModalita, nuoviParam);
+                 */
+                //TODO: Sostituire al posto di parte sopra in v3,v4
+                try {
+                    ModalitaOperativa nuovaMod = (ModalitaOperativa) mod.clone();
+                    nuovaMod.setParametro(nomeParametro, valoreParametro);
+                    modificaArtefatti(nuovaMod);
+                } catch (CloneNotSupportedException e) {
+                    e.printStackTrace();
+                }
 
                 System.out.println("*** Modalità modificata correttamente ***");
                 return;
@@ -178,7 +199,6 @@ public class Attuatore {
      */
 
     private void modificaArtefatti(ModalitaOperativa mod) {
-
         for (Artefatto art: listaComandati) {
             art.setStatoAttuale(mod);
         }

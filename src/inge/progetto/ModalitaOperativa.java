@@ -7,16 +7,15 @@ import java.util.HashMap;
  * Rappresenta la modalit&agrave; operativa di una determinato {@link Attuatore}e di conseguenza lo stato dell'{@link Artefatto}
  * ad esso associato. Permettendo cosi ad un attuatore, attraverso una specifica modalit&agrave;, di comandare
  * il comportamento dell'artefatto, misurato o comunque monitorato eventualmente da un {@link Sensore}.
- *
+ * <p>
  * Una modalit&agrave; operativa pu&ograve; inoltre essere parametrica e quindi caratterizzata da dei {@link #parametri}: ad esempio un {@link Attuatore} destinato alla termoregolazione di un interno &egrave; eventulamente dotato di una modalit&agrave;
  * operativa parametrica, dove un parametro &egrave; la temperatura desiderata impostata dal fruitore.
  *
  * @author Parampal Singh, Mattia Nodari
- *
  * @see Informazione
  */
 public class ModalitaOperativa extends Informazione
-                                implements Serializable {
+        implements Serializable, Cloneable{
 
 
     /**
@@ -25,7 +24,8 @@ public class ModalitaOperativa extends Informazione
      */
     private HashMap<String, Integer> parametri;
 
-    /**Costruttore della classe
+    /**
+     * Costruttore della classe
      * La modalit&agrave; operativa &egrave; non parametrica completamente specificata dal manutentore con nome
      * @param valore nome/valore della modalit&agrave; operativa
      */
@@ -36,8 +36,9 @@ public class ModalitaOperativa extends Informazione
         this.parametri = new HashMap<>();
     }
 
-    /**Costruisce un istanza di modalit&agrave; operativa; in questo sar&agrave; una modalita operativa parametrica in quanto vengono definiti anche i
-     * @param valore nome/valore della modalit&agrave; operativa
+    /**
+     * Costruisce un istanza di modalit&agrave; operativa; in questo sar&agrave; una modalita operativa parametrica in quanto vengono definiti anche i
+     * @param valore    nome/valore della modalit&agrave; operativa
      * @param parametri parametri da specificare nel caso la modalit&agrave; sia parametrica
      */
     public ModalitaOperativa(String valore, HashMap<String, Integer> parametri) {
@@ -47,28 +48,22 @@ public class ModalitaOperativa extends Informazione
         super.setTipo("NN");
     }
 
-    /** Permette di modificare un parametro della modalità operativa
-     * @param nome nome del parametro che si desidera modificare
+    /**
+     * Permette di modificare un parametro della modalità operativa
+     * @param nome        nome del parametro che si desidera modificare
      * @param valoreParam nuovo valore da assegnare al parametro
      */
     public void setParametro(String nome, int valoreParam) {
         if (parametri.isEmpty()) {
             System.out.println("!!! La modalità operativa non è parametrica !!! Riprova");
             return;
-        }
-        else if (!parametri.containsKey(nome)) {
+        } else if (!parametri.containsKey(nome)) {
             System.out.println("!!! La modalita operativa non ha un parametro con questo nome !!! Riprova");
             return;
         }
 
-
-        parametri.put(nome,valoreParam);
+        parametri.put(nome, valoreParam);
         System.out.println("*** Il parametro è stato impostato correttamente al nuovo valore ***");
-    }
-
-    @Override
-    public String getValore() {
-        return (String) this.valore;
     }
 
     /**
@@ -103,10 +98,53 @@ public class ModalitaOperativa extends Informazione
         return parametri;
     }
 
-    /**Permette di specificare/modificare i parametri della modalità operativa
+    /**
+     * Permette di specificare/modificare i parametri della modalità operativa
+     *
      * @param parametri nuovi parametri da assegnare alla modalità operativa
      */
     public void setParametri(HashMap<String, Integer> parametri) {
         this.parametri = parametri;
+    }
+
+    //TODO: Aggiungere in v3, v4
+    @Override
+    protected Object clone() throws CloneNotSupportedException {
+
+        ModalitaOperativa cloned = (ModalitaOperativa) super.clone();
+        cloned.setValore(""+this.valore);
+
+        HashMap<String, Integer> nuoviParam = new HashMap<>();
+        if (isParametrica()) {
+
+            HashMap<String, Integer> vecchiParam = this.getParametri();
+
+            for (String key : vecchiParam.keySet()) {
+                nuoviParam.put(key, vecchiParam.get(key));
+            }
+
+            cloned.setParametri(nuoviParam);
+        }
+        cloned.setParametri(nuoviParam);
+
+        return cloned;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+
+        ModalitaOperativa that = (ModalitaOperativa) o;
+
+        return getParametri().equals(that.getParametri());
+    }
+
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + getParametri().hashCode();
+        return result;
     }
 }

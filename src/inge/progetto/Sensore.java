@@ -1,5 +1,6 @@
 package inge.progetto;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
@@ -11,7 +12,7 @@ import java.util.ArrayList;
  *
  * @author Parampal Singh, Mattia Nodari
  */
-public class Sensore {
+public class Sensore implements Serializable {
     /** nome del sensore*/
     private String nome;
 
@@ -40,7 +41,8 @@ public class Sensore {
     public Sensore(String nome, CategoriaSensore categoria) {
         this.nome = nome + "_" + categoria.getNome();
         this.categoria = categoria;
-        this.rilevazioni = categoria.getInfoRilevabili();
+        // TODO: 10/04/2020 aggiungere in v3,v4 
+        this.rilevazioni = categoria.getCopiaInfoRilevabili();
         this.statoAttivazione = true;
         this.connesso = false;
     }

@@ -1,5 +1,6 @@
 package inge.progetto;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
@@ -10,7 +11,7 @@ import java.util.ArrayList;
  *
  * @author Parampal Singh, Mattia Nodari
  */
-public class UnitaImmobiliare {
+public class UnitaImmobiliare implements Serializable {
     /**
      * insieme di stanze contenute nell'unit&agrave; immobiliare
      */
@@ -39,7 +40,7 @@ public class UnitaImmobiliare {
 
     private String nome;
 
-    /**Costruttore per specifica di un oggetto UnitaImmboliare
+    /**Costruttore per specifica di un oggetto UnitaImmobiliare
      * @param tipo destinazione d'uso dell'unit&agrave; immobiliare
      * @param nome nome dell'unit&agrave; immobiliare
      */
@@ -233,5 +234,4 @@ public class UnitaImmobiliare {
             s.aggiornaInfo();
 
     }
-
 }
