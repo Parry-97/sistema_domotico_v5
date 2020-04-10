@@ -32,6 +32,10 @@ import java.util.*;
  */
 public class Main {
 
+    //TODO: Per il salvataggio delle unità immobiliare puoi tranquillamente usare il metodo salva come nel caso delle categorie
+    //    : e le modalita operative mentre per il ripristino dell'unità usa ripristinaUnita(fare 2 nuovi case)️
+
+
     public synchronized static void main(String[] args) {
 
         UnitaImmobiliare unitaImmobiliare = new UnitaImmobiliare();
@@ -973,11 +977,9 @@ public class Main {
                             break;
 
                         case 17:
-
                             listaModalitaOperative = ripristina("Modalita_Operative.ser");
                             listaCategoriaSensori = ripristina("Categorie_Sensori.ser");
                             listaCategoriaAttuatori = ripristina("Categorie_Attuatori.ser");
-
                             break;
 
                         case 0:
@@ -1032,7 +1034,7 @@ public class Main {
                                         if (immo.getNome().equals(seleziona)) {
                                             presente = true;
                                             unitaImmobiliare = immo;
-                                            ruleParser.setUp(seleziona+".txt",immo.getListaSensori(),immo.getListaAttuatori());
+                                            ruleParser.setUp(seleziona+".txt");
                                             break;
                                         }
                                     }
@@ -1451,16 +1453,7 @@ public class Main {
                                         }
                                     }
                                 } else {
-                                    if (nomeSensore.equals("true")) {
-                                            proseguire = InputDati.yesOrNo("Si vuole aggiungere un'altra condizione per la seguente regola?");
-                                        if (proseguire) {
-                                            System.out.println("Operatori logici consentinti: AND, OR");
-                                            do {
-                                                logico = InputDati.leggiStringaNonVuota("Inserisci il tipo di operatore logico: ");
-                                            } while (!logico.equals("AND") && !logico.equals("OR"));
-                                            regola += logico + " ";
-                                        }
-                                    } else {
+                                    if (!nomeSensore.equals("true")) {
                                         System.out.println("\nOperazioni consentite(con dato di tipo orario):\n" +
                                                 "Uguale(=), Maggiore(>), Minore(<), Maggiore-Uguale(>=), Minore-Uguale(<=)");
                                         do {
@@ -1471,20 +1464,20 @@ public class Main {
                                         String minuti;
                                         do {
                                             ora = InputDati.leggiStringaNonVuota("Inserisci l'ora di attivazione della regola: ");
-                                        } while(!ora.matches("[0-1]?[0-9]|2[0-3]"));
+                                        } while (!ora.matches("[0-1]?[0-9]|2[0-3]"));
                                         do {
                                             minuti = InputDati.leggiStringaNonVuota("Ed inserisci a che minuto minuti atttivare la regola: ");
-                                        } while(!minuti.matches("[0-5]?[0-9]"));
+                                        } while (!minuti.matches("[0-5]?[0-9]"));
                                         regola += op + " " + ora + "." + minuti + " ";
 
-                                        proseguire = InputDati.yesOrNo("Si vuole aggiungere un'altra condizione per la seguente regola?");
-                                        if (proseguire) {
-                                            System.out.println("Operatori logici consentinti: AND, OR");
-                                            do {
-                                                logico = InputDati.leggiStringaNonVuota("Inserisci il tipo di operatore logico: ");
-                                            } while (!logico.equals("AND") && !logico.equals("OR"));
-                                            regola += logico + " ";
-                                        }
+                                    }
+                                    proseguire = InputDati.yesOrNo("Si vuole aggiungere un'altra condizione per la seguente regola?");
+                                    if (proseguire) {
+                                        System.out.println("Operatori logici consentinti: AND, OR");
+                                        do {
+                                            logico = InputDati.leggiStringaNonVuota("Inserisci il tipo di operatore logico: ");
+                                        } while (!logico.equals("AND") && !logico.equals("OR"));
+                                        regola += logico + " ";
                                     }
                                 }
 
@@ -1822,7 +1815,7 @@ public class Main {
 
     }
 
-    private static <T> ArrayList<T> ripristina(String filename) {
+    public static <T> ArrayList<T> ripristina(String filename) {
         FileInputStream in;
         ArrayList<T> list = new ArrayList<>();
         try {
@@ -1838,19 +1831,23 @@ public class Main {
         return list;
     }
 
-    public static <T> void salva(ArrayList<T> list, String filename) {
+    public static <T> void salva(T obj, String filename) {
+
+        if (obj instanceof List && ((List) obj).isEmpty()) {
+            System.out.println("!!! Non sono presenti " + filename.replace(".ser", "").replace("_"," ") + " da poter salvare !!!");
+            return;
+        }
 
         try {
 
             FileOutputStream out = new FileOutputStream(filename);
             ObjectOutputStream s = new ObjectOutputStream(out);
-            s.writeObject(list);
+            s.writeObject(obj);
             s.flush();
-            System.out.println("*** Salvataggio delle " + filename.replace("_"," ")
+            System.out.println("*** Salvataggio di " + filename.replace("_"," ")
                                                                   .replace(".ser", "") +" è andato a buon fine ***");
-
         } catch (IOException e) {
-            System.out.println("!!! Si è verificato un errore nel salvataggio delle " + filename.replace("_"," ")
+            System.out.println("!!! Si è verificato un errore nel salvataggio di " + filename.replace("_"," ")
                                                                                                 .replace(".ser", "") + " !!!");
         }
     }
@@ -1860,5 +1857,46 @@ public class Main {
         return Calendar.getInstance().get(Calendar.HOUR_OF_DAY) + "." + Calendar.getInstance().get(Calendar.MINUTE);
     }
 
+
+    public static UnitaImmobiliare ripristinaUnita(String filename, ArrayList<CategoriaSensore> cateSens, ArrayList<CategoriaAttuatore> cateAtt) {
+        FileInputStream in;
+        UnitaImmobiliare immo = new UnitaImmobiliare();
+
+        try {
+            in = new FileInputStream(filename);
+            ObjectInputStream s = new ObjectInputStream(in);
+            immo = (UnitaImmobiliare) s.readObject();
+
+            if (!verificaCompatibilita(immo, cateAtt,cateSens))
+                throw new IOException();
+
+            System.out.println("*** Ripristino dell'unita immobiliare" + filename.replace(".ser", "")  +" è andato a buon fine ***");
+        } catch (IOException | ClassNotFoundException e) {
+            System.out.println("XXX Errore durante ripristino di " + filename.replace("_"," ")
+                    .replace(".ser", "") +" XXX");
+        }
+        return immo;
+    }
+
+    //simile all'abilitazione regole
+    protected static boolean verificaCompatibilita(UnitaImmobiliare immo, ArrayList<CategoriaAttuatore> cateAtt, ArrayList<CategoriaSensore> cateSens) {
+        if (cateAtt.isEmpty() || cateSens.isEmpty())
+            return false;
+
+        ArrayList<Attuatore> attuatori = immo.getListaAttuatori();
+        ArrayList<Sensore> sensori = immo.getListaSensori();
+
+        for (Sensore sens: sensori) {
+            if (!cateSens.contains(sens.getCategoria()))
+                return false;
+        }
+
+        for (Attuatore att: attuatori) {
+            if (!cateAtt.contains(att.getCategoria()))
+                return false;
+        }
+
+        return true;
+    }
 
 }

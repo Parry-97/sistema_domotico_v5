@@ -9,7 +9,7 @@ import java.io.Serializable;
  *
  * @author Parampal Singh, Mattia Nodari
  */
-public class Informazione implements Serializable {
+public class Informazione implements Serializable,Cloneable{
 
 
     private String nome;
@@ -34,6 +34,14 @@ public class Informazione implements Serializable {
     public Informazione(String nome) {
         this.nome = nome;
         this.tipo = "N";
+        aggiornaValore();
+    }
+
+    public Informazione(Informazione info) {
+        this.nome = info.getNome();
+        this.tipo = info.tipo;
+        this.VALORE_MAX = info.getVALORE_MAX();
+        this.VALORE_MIN = info.getVALORE_MIN();
         aggiornaValore();
     }
 
@@ -66,16 +74,18 @@ public class Informazione implements Serializable {
         this.aggiornaValore();
     }
 
-    /**Fornisce la misura/valore dell'informazione, un valore casuale numerico che cade entro il dominio specificato
-     * @return valore numerico dell'informazione
-     */
+
     public void aggiornaValore() {
         this.valore =  (int) (Math.random() * (this.VALORE_MAX - this.VALORE_MIN) + this.VALORE_MIN);
     }
 
+    /**Fornisce la misura/valore dell'informazione, un valore casuale numerico che cade entro il dominio specificato
+     * @return valore numerico dell'informazione
+     */
     public Object getValore(){
         return this.valore;
     }
+
     /**Fornisce estremo superiore del dominio in cui cade l'informazione
      * @return valore massimo possibile per l'informazione
      */
@@ -103,6 +113,11 @@ public class Informazione implements Serializable {
         this.nome = nome;
     }
 
+    // TODO: 10/04/2020 aggiungere in v3,v4
+    public void setValore(Object valore) {
+        this.valore = valore;
+    }
+
     @Override
     public String toString() {
         return "[" + this.nome + " : " + this.getValore() + "]";
@@ -114,5 +129,40 @@ public class Informazione implements Serializable {
 
     public void setTipo(String tipo) {
         this.tipo = tipo;
+    }
+
+
+    //TODO: Aggiungere in v3 e v4
+    @Override
+    protected Object clone() throws CloneNotSupportedException {
+        Informazione clone = (Informazione) super.clone();
+        clone.setVALORE_MAX(this.getVALORE_MAX());
+        clone.setVALORE_MIN(this.getVALORE_MIN());
+        clone.setTipo(this.getTipo());
+        return clone;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Informazione that = (Informazione) o;
+
+        if (getVALORE_MAX() != that.getVALORE_MAX()) return false;
+        if (getVALORE_MIN() != that.getVALORE_MIN()) return false;
+        if (!getNome().equals(that.getNome())) return false;
+        if (!getTipo().equals(that.getTipo())) return false;
+        return getValore().equals(that.getValore());
+    }
+
+    @Override
+    public int hashCode() {
+        int result = getNome().hashCode();
+        result = 31 * result + getTipo().hashCode();
+        result = 31 * result + getValore().hashCode();
+        result = 31 * result + getVALORE_MAX();
+        result = 31 * result + getVALORE_MIN();
+        return result;
     }
 }

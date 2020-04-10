@@ -1,5 +1,6 @@
 package inge.progetto;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -12,7 +13,7 @@ import java.util.Arrays;
  * @see ModalitaOperativa
  * @author Parampal Singh, Mattia Nodari
  */
-public class Artefatto {
+public class Artefatto implements Serializable {
     private String nome;
     /**
      * Rappresenta lo 'stato attuale' dell'artefatto, monitorato da sensori({@link #listaSensori}) e comandato

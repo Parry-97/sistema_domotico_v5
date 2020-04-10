@@ -45,6 +45,8 @@ public class CategoriaSensore implements Serializable {
         this.nome = nome;
         this.testolibero = testolibero;
         this.fisico = fisico;
+        // TODO: 10/04/2020 mettere in v3,v4
+        infoRilevabili = new ArrayList<>();
     }
 
     /**Costruttore per la specifica di un oggetto di tipo CategoriaSensore
@@ -93,8 +95,27 @@ public class CategoriaSensore implements Serializable {
     /**Fornisce l'informazione rilevabile da sensori di questa categoria
      * @return l'informazione rilevabile da sensori della stessa categoria
      */
+
+    //TODO: Controllare non abbia ripercussioni troppo gravi sul resto del codice ️
     public ArrayList<Informazione> getInfoRilevabili() {
-        return infoRilevabili;
+        return this.infoRilevabili;
+    }
+
+    //TODO: Aggiungere in v3,v4
+    public ArrayList<Informazione> getCopiaInfoRilevabili() {
+        ArrayList<Informazione> newInfos = new ArrayList<>();
+
+        for (Informazione info : this.infoRilevabili) {
+            try {
+
+                Informazione newInfo = (Informazione) info.clone();
+                newInfos.add(newInfo);
+
+            } catch (CloneNotSupportedException e) {
+                e.printStackTrace();
+            }
+        }
+        return newInfos;
     }
 
     /**Permette di specificare il tipo di informazione rilevabile da sensori della stessa categoria
@@ -119,4 +140,28 @@ public class CategoriaSensore implements Serializable {
     public void setFisico(boolean fisico) {
         this.fisico = fisico;
     }
+
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        CategoriaSensore that = (CategoriaSensore) o;
+
+        if (isFisico() != that.isFisico()) return false;
+        if (!getNome().equals(that.getNome())) return false;
+        if (!getTestolibero().equals(that.getTestolibero())) return false;
+        return getInfoRilevabili().equals(that.getInfoRilevabili());
+    }
+
+    @Override
+    public int hashCode() {
+        int result = getNome().hashCode();
+        result = 31 * result + (isFisico() ? 1 : 0);
+        result = 31 * result + getTestolibero().hashCode();
+        result = 31 * result + getInfoRilevabili().hashCode();
+        return result;
+    }
+
 }

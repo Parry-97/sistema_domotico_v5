@@ -1,5 +1,6 @@
 package inge.progetto;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -15,7 +16,7 @@ import java.util.Arrays;
  *
  * @author Parampal Singh, Mattia Nodari
  */
-public class Stanza {
+public class Stanza implements Serializable {
     /**
      * nome della stanza
      */

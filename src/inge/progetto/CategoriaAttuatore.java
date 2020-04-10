@@ -2,6 +2,7 @@ package inge.progetto;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Objects;
 
 /**
  * Ogni {@link Attuatore} &egrave; definito tramite una categoria a cui 'appartiene'. Una categoria di attuatori &egrave; univocamente identificata
@@ -62,6 +63,7 @@ public class CategoriaAttuatore implements Serializable {
     /**Fornisce l'insieme delle modalit&agrave; operative esibite da attuatori appartenenti alla categoria
      * @return lista di {@link #modalita} operative
      */
+    //TODO: implementare magari modalita.clone come in CateSens (Non per Mattia)
     public ArrayList<ModalitaOperativa> getModalita() {
         return modalita;
     }
@@ -94,5 +96,27 @@ public class CategoriaAttuatore implements Serializable {
         }
 
         return visualizza;
+    }
+
+    /*Versione di Intellij*/
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        CategoriaAttuatore that = (CategoriaAttuatore) o;
+
+        if (!getNome().equals(that.getNome())) return false;
+        if (!getTestoLibero().equals(that.getTestoLibero())) return false;
+
+        return getModalita().equals(that.getModalita());
+    }
+
+    @Override
+    public int hashCode() {
+        int result = getNome().hashCode();
+        result = 31 * result + getTestoLibero().hashCode();
+        result = 31 * result + getModalita().hashCode();
+        return result;
     }
 }
