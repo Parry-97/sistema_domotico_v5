@@ -131,7 +131,6 @@ public class Attuatore implements Serializable {
             return;
         }
         //Giusto perche l'utente lo sappia
-        // TODO: 10/04/2020 aggiungere in v3 e v4
         if (this.listaComandati.isEmpty()) {
             System.out.println("--- L'attuatore non comanda alcun artefatto! ---");
         }
@@ -160,25 +159,14 @@ public class Attuatore implements Serializable {
             System.out.println("+ Sei già in questa modalità +");
         }
         //Giusto perche l'utente lo sappia (piu importante qua per il problema citato nel DaFarsi sopra citato)
-        // TODO: 10/04/2020 aggiugere in v3,v4
         if(this.listaComandati.isEmpty()) {
             System.out.println("--- L'attuatore non comanda alcun artefatto! ---");
         }
 
-        //TODO: Implementare magari con un metodo getModalita che usa clone per cateAtt come cateSens(Non per Mattia)
         for (ModalitaOperativa mod : this.getCategoria().getModalita()) {
             if(mod.getValore().equals(nuovaModalita)) {
                 this.modalitaAttuale = nuovaModalita;
 
-                /*HashMap<String, Integer> nuoviParam = new HashMap<>();
-                HashMap<String,Integer> vecchiParam = mod.getParametri();
-
-                for (String key : vecchiParam.keySet()) {
-                    nuoviParam.put(key,vecchiParam.get(key));
-                }
-                ModalitaOperativa nuovaMod = new ModalitaOperativa(nuovaModalita, nuoviParam);
-                 */
-                //TODO: Sostituire al posto di parte sopra in v3,v4
                 try {
                     ModalitaOperativa nuovaMod = (ModalitaOperativa) mod.clone();
                     nuovaMod.setParametro(nomeParametro, valoreParametro);

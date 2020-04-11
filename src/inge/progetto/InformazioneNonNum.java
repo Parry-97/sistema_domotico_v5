@@ -41,13 +41,11 @@ public class InformazioneNonNum extends Informazione
         super.setTipo("NN");
         this.dominioNonNumerico = dominioNonNumerico;
         super.setVALORE_MAX(dominioNonNumerico.size());
-        aggiornaValore();
     }
 
     public void setDominioNonNumerico(ArrayList<String> dominioNonNumerico) {
         this.dominioNonNumerico = dominioNonNumerico;
         super.setVALORE_MAX(dominioNonNumerico.size());
-        aggiornaValore();
     }
 
     @Override
@@ -69,7 +67,6 @@ public class InformazioneNonNum extends Informazione
         return "[ Nome informazione: " + super.getNome() + " | Rilevazione: " + this.getValore() + " ]";
     }
 
-    // TODO: 10/04/2020 aggiungere in v3,v4
     @Override
     protected Object clone() throws CloneNotSupportedException {
         InformazioneNonNum cloned = (InformazioneNonNum) super.clone();
