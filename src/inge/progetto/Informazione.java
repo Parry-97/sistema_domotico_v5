@@ -34,15 +34,8 @@ public class Informazione implements Serializable,Cloneable{
     public Informazione(String nome) {
         this.nome = nome;
         this.tipo = "N";
-        aggiornaValore();
-    }
-
-    public Informazione(Informazione info) {
-        this.nome = info.getNome();
-        this.tipo = info.tipo;
-        this.VALORE_MAX = info.getVALORE_MAX();
-        this.VALORE_MIN = info.getVALORE_MIN();
-        aggiornaValore();
+        this.valore = 0;
+        //aggiornaValore();
     }
 
     /** Costruttore per un oggetto di tipo {@link Informazione}
@@ -55,7 +48,8 @@ public class Informazione implements Serializable,Cloneable{
         this.VALORE_MAX = valoreMax;
         this.VALORE_MIN = valoreMin;
         this.tipo="N";
-        this.aggiornaValore();
+        this.valore = 0;
+        //this.aggiornaValore();
     }
 
     /**Permette di modificare estremo superiore del dominio in cui cade l'informazione
@@ -63,7 +57,7 @@ public class Informazione implements Serializable,Cloneable{
      */
     public void setVALORE_MAX(int VALORE_MAX) {
         this.VALORE_MAX = VALORE_MAX;
-        this.aggiornaValore();
+        //this.aggiornaValore();
     }
 
     /**Permette di modificare estremo inferiore del dominio in cui cade l'informazione
@@ -71,9 +65,8 @@ public class Informazione implements Serializable,Cloneable{
      */
     public void setVALORE_MIN(int VALORE_MIN) {
         this.VALORE_MIN = VALORE_MIN;
-        this.aggiornaValore();
+        //this.aggiornaValore();
     }
-
 
     public void aggiornaValore() {
         this.valore =  (int) (Math.random() * (this.VALORE_MAX - this.VALORE_MIN) + this.VALORE_MIN);

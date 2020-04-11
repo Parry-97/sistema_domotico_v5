@@ -14,7 +14,6 @@ public class RuleParser {
         this.fileName = "";
     }
 
-
     // TODO: 09/04/2020 Perche avevo in mente di usare le liste di dispositivi?(Non per Mattia)
     public void setUp(String fileName) {
         this.fileName = fileName;
@@ -44,35 +43,40 @@ public class RuleParser {
 
     /**
      * Viene effettuata la lettura da file per recuperare la lista delle regole create dal fruitore.
+     *
      * @return la lettura delle regole dal file dell'unità immobiliare corrente
      */
     public String readRuleFromFile() {
+        return readFromFile(this.fileName);
+    }
 
-        StringBuilder output = new StringBuilder();
-        boolean presente = new File(this.fileName).exists();
+    private static String readFromFile(String fileName) {
 
-        if (!presente) {
-            return "";
-        }
-        try {
-            FileReader reader = new FileReader(fileName);
+            StringBuilder output = new StringBuilder();
+            boolean presente = new File(fileName).exists();
 
-            BufferedReader bufferedReader = new BufferedReader(reader);
-
-
-            String line;
-            while ((line = bufferedReader.readLine()) != null) {
-                output.append(line).append("\n");
+            if (!presente) {
+                return "";
             }
+            try {
+                FileReader reader = new FileReader(fileName);
+                BufferedReader bufferedReader = new BufferedReader(reader);
+                String line;
+                while ((line = bufferedReader.readLine()) != null) {
+                    output.append(line).append("\n");
+                }
+                bufferedReader.close();
+                reader.close();
 
-            bufferedReader.close();
-            reader.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return output.toString();
+    }
 
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        return output.toString();
+    public void importaRegole(String file, ArrayList<Sensore> listaSensori, ArrayList<Attuatore> listaAttuatori) {
+        String[] regoleImport = readFromFile(file).split("");
+        // TODO: 10/04/2020 Sembra essere una menata
     }
 
     /**
@@ -119,7 +123,6 @@ public class RuleParser {
                 return false;
             }
         }
-
         return true;
     }
 
@@ -152,10 +155,10 @@ public class RuleParser {
 
     public void abilitaRegoleconDispositivo(String nomeDispositivo, ArrayList<Sensore> listaSensori, ArrayList<Attuatore> listaAttuatori) {
         String[] regole = readRuleFromFile().split("\n");
-        for (int i = 0; i < regole.length; i++) {
-            if (regole[i].contains(nomeDispositivo)) {
-                if (verificaAbilitazione(regole[i], listaSensori, listaAttuatori)) {
-                    cambiaAbilitazioneRegola(regole[i], true);
+        for (String s : regole) {
+            if (s.contains(nomeDispositivo)) {
+                if (verificaAbilitazione(s, listaSensori, listaAttuatori)) {
+                    cambiaAbilitazioneRegola(s, true);
                 }
             }
         }
@@ -163,15 +166,16 @@ public class RuleParser {
 
     public void disabilitaRegolaConDispositivo(String nomeDispositivo) {
         String[] regole = readRuleFromFile().split("\n");
-        for (int i = 0; i < regole.length; i++) {
-            if (regole[i].contains(nomeDispositivo)) {
-                cambiaAbilitazioneRegola(regole[i], false);
+        for (String s : regole) {
+            if (s.contains(nomeDispositivo)) {
+                cambiaAbilitazioneRegola(s, false);
             }
         }
     }
 
     /**
      * Il metodo isola una singola azione e la passa al metodo che applica le singole regole.
+     *
      * @param token          sezione di azione da eseguire
      * @param listaAttuatori dell'unità immobiliare sulla quale si stanno effettuando le operazioni
      */
@@ -179,7 +183,6 @@ public class RuleParser {
         for (String tok : token.split(" ; "))
             if (tok.contains("start")) {
                 Date data = getTime(tok.split(" , ")[1].split(" := ")[1]);
-
                 this.timer.schedule(new AzioneProgrammata(listaAttuatori, tok.split(" , ")[0]), data);
 
             } else {
@@ -237,7 +240,7 @@ public class RuleParser {
      * gli operatori logici di AND e OR.
      * @param cos          è la condizione affinchè una regola si verifichi.
      * @param listaSensori dell'unità immobiliare sulla quale si stanno effettuando le operazioni
-     * @return
+     * @return il risultato di una determinata espressione booleana/antecedente
      */
     private boolean calculate(String cos, ArrayList<Sensore> listaSensori) {
         if (cos.equals("true"))
@@ -408,18 +411,15 @@ public class RuleParser {
         }
     }
 
-
-    //TODO: Gestire OUTPUT -> TRIGGER
     public class AzioneProgrammata extends TimerTask {
 
-        private ArrayList<Attuatore> attuatori;
-        private String azione;
+        private final ArrayList<Attuatore> attuatori;
+        private final String azione;
 
         public AzioneProgrammata(ArrayList<Attuatore> attuatori, String azione) {
             System.out.println(Thread.currentThread().getName());
             this.attuatori = attuatori;
             this.azione = azione;
-
         }
 
         public String getAzione() {

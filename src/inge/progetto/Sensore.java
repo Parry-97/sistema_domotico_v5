@@ -44,6 +44,7 @@ public class Sensore implements Serializable {
         this.rilevazioni = categoria.getCopiaInfoRilevabili();
         this.statoAttivazione = true;
         this.connesso = false;
+        aggiornaInfo();
     }
 
     /**Fornisce il nome del sensore

@@ -1899,7 +1899,7 @@ public class Main {
 
     public static UnitaImmobiliare ripristinaUnita(String filename, ArrayList<CategoriaSensore> cateSens, ArrayList<CategoriaAttuatore> cateAtt) {
         FileInputStream in;
-        UnitaImmobiliare immo = new UnitaImmobiliare();
+        UnitaImmobiliare immo;
 
         try {
             in = new FileInputStream(filename);
@@ -1909,7 +1909,7 @@ public class Main {
             if (!verificaCompatibilita(immo, cateAtt,cateSens))
                 throw new IOException();
 
-            System.out.println("*** Ripristino dell'unita immobiliare" + filename.replace(".ser", "")  +" è andato a buon fine ***");
+            System.out.println("*** Ripristino dell'unita immobiliare " + filename.replace(".ser", "")  +" è andato a buon fine ***");
         } catch (IOException | ClassNotFoundException e) {
             System.out.println("XXX Errore durante ripristino di " + filename.replace("_"," ")
                     .replace(".ser", "") +" XXX");
@@ -1918,7 +1918,6 @@ public class Main {
         return immo;
     }
 
-    //simile all'abilitazione regole
     protected static boolean verificaCompatibilita(UnitaImmobiliare immo, ArrayList<CategoriaAttuatore> cateAtt, ArrayList<CategoriaSensore> cateSens) {
         if (cateAtt.isEmpty() || cateSens.isEmpty())
             return false;
@@ -1938,5 +1937,4 @@ public class Main {
 
         return true;
     }
-
 }

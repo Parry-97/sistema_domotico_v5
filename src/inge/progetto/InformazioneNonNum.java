@@ -41,13 +41,11 @@ public class InformazioneNonNum extends Informazione
         super.setTipo("NN");
         this.dominioNonNumerico = dominioNonNumerico;
         super.setVALORE_MAX(dominioNonNumerico.size());
-        aggiornaValore();
     }
 
     public void setDominioNonNumerico(ArrayList<String> dominioNonNumerico) {
         this.dominioNonNumerico = dominioNonNumerico;
         super.setVALORE_MAX(dominioNonNumerico.size());
-        aggiornaValore();
     }
 
     @Override

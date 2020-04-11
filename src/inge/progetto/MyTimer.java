@@ -3,8 +3,7 @@ package inge.progetto;
 import java.util.*;
 
 public class MyTimer extends Timer {
-
-    private HashMap<String,Date> azioniProgrammate;
+    private final HashMap<Date, String> azioniProgrammate;
 
     public MyTimer(String name) {
         super(name);
@@ -19,17 +18,29 @@ public class MyTimer extends Timer {
 
         String azione = task.getAzione();
 
-        if (!azioniProgrammate.containsKey(azione)) {
-            azioniProgrammate.put(azione,time);
+        if (!azioniProgrammate.containsValue(azione)) {
+            azioniProgrammate.put(time,azione);
             super.schedule(task, time);
+
         } else {
-            if (azioniProgrammate.get(azione).compareTo(time) != 0)
-                super.schedule(task,time);
+            for (Map.Entry<Date, String> entry : azioniProgrammate.entrySet()) {
+                if (entry.getValue().equals(azione) && entry.getKey().compareTo(time) != 0) {
+                    super.schedule(task,time);
+                    azioniProgrammate.put(time,azione);
+                    break;
+                }
+
+            }
+        }
+    }
+
+    public void eliminaTask(String azione) {
+        for (Map.Entry<Date, String> entry : azioniProgrammate.entrySet()) {
+            if (entry.getValue().equals(azione)) {
+                azioniProgrammate.remove(entry.getKey());
+                break;
+            }
 
         }
-
-    }
-    public void eliminaTask(String azione) {
-        azioniProgrammate.remove(azione);
     }
 }
