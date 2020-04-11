@@ -35,6 +35,7 @@ public class Main {
     //TODO: Per il salvataggio delle unità immobiliare puoi tranquillamente usare il metodo salva come nel caso delle categorie
     //    : e le modalita operative mentre per il ripristino dell'unità usa ripristinaUnita(fare 2 nuovi case)️
 
+    // TODO: 10/04/2020 mettere tutti i salva in un case??
 
     public synchronized static void main(String[] args) {
 
@@ -59,7 +60,8 @@ public class Main {
                     System.out.println("\n1) CREA O SELEZIONA UNITA' IMMOBILIARE\n2) CREA STANZA\n3) AGGIUNGI UNA CATEGORIA DI SENSORI\n4) AGGIUNGI UNA CATEGORIA DI ATTUATORI\n" +
                             "5) CREA ARTEFATTO\n6) CREA NUOVA MODALITA' OPERATIVA\n7) CREA ATTUATORE\n8) ASSEGNA MODALITA' OPERATIVA AD UNA CATEGORIA DI ATTUATORI\n9) CREA SENSORE\n" +
                             "10) AGGIUNGI SENSORE E ATTUATORE AD ARTEFATTO\n11) AGGIUNGI ARTEFATTO A STANZA\n12) AGGIUNGI SENSORE A STANZA\n13) MOSTRA RILEVAZIONI DI UN SENSORE\n" +
-                            "14) SETTA NUOVA MODALITA' ATTUATORE\n15) VISUALIZZA TUTTO\n16) SALVA CATEGORIE DI SENSORI E ATTUATORI SU FILE\n17) RIPRISTINA CATEGORIE DI SENSORI E ATTUATORI\n0) USCITA\n");
+                            "14) SETTA NUOVA MODALITA' ATTUATORE\n15) VISUALIZZA TUTTO\n16) SALVA CATEGORIE DI SENSORI E ATTUATORI SU FILE\n17) RIPRISTINA CATEGORIE DI SENSORI E ATTUATORI\n" +
+                            "18) SALVA UNITA' IMMOBILIARE\n19) RIPRISTINA UNITA' IMMOBILIARE\n0) USCITA\n");
 
                     caso = InputDati.leggiIntero("### Seleziona funzionalità: ");
                     switch (caso) {
@@ -960,7 +962,6 @@ public class Main {
                             break;
 
                         case 16:
-
                             if (listaCategoriaSensori.isEmpty()) {
                                 System.out.println("\n!XX! Non sono presenti categorie di sensori da salvare !XX!");
                                 break;
@@ -980,6 +981,44 @@ public class Main {
                             listaModalitaOperative = ripristina("Modalita_Operative.ser");
                             listaCategoriaSensori = ripristina("Categorie_Sensori.ser");
                             listaCategoriaAttuatori = ripristina("Categorie_Attuatori.ser");
+                            break;
+
+                        case 18:
+                            if (unitaImmobiliare.getTipo().equals("")) {
+                                System.out.println("!!! Unità Immobiliare non creata. E' necessario definirla prima di questa operazione !!!");
+                                break;
+                            }
+
+                            if (listaCategoriaSensori.isEmpty()) {
+                                System.out.println("\n!XX! Non sono presenti categorie di sensori da salvare !XX!");
+                                break;
+                            }
+                            if (listaCategoriaAttuatori.isEmpty()) {
+                                System.out.println("\n!XX! Non sono presenti categorie di attuatori da salvare !XX!");
+                                break;
+                            }
+
+                            salva(unitaImmobiliare, unitaImmobiliare.getNome() + ".ser");
+                            break;
+
+                        case 19:
+                            if (listaCategoriaSensori.isEmpty()) {
+                                System.out.println("\n!XX! Non sono presenti categorie di sensori per effettuare il ripristino dell'unità immobiliare !XX!");
+                                break;
+                            }
+                            if (listaCategoriaAttuatori.isEmpty()) {
+                                System.out.println("\n!XX! Non sono presenti categorie di attuatori per effettuare il ripristino dell'unità immobiliare !XX!");
+                                break;
+                            }
+
+                            String nomeUnita = InputDati.leggiStringa("Inserisci il nome dell'unità immobiliare che si deridera ripristinare: ");
+                            UnitaImmobiliare temp = ripristinaUnita(nomeUnita + ".ser", listaCategoriaSensori, listaCategoriaAttuatori);
+
+                            if(temp.getTipo().equals(""))
+                                unitaImmobiliare = new UnitaImmobiliare();
+                            else
+                                unitaImmobiliare = temp;
+
                             break;
 
                         case 0:
@@ -1874,6 +1913,7 @@ public class Main {
         } catch (IOException | ClassNotFoundException e) {
             System.out.println("XXX Errore durante ripristino di " + filename.replace("_"," ")
                     .replace(".ser", "") +" XXX");
+            return new UnitaImmobiliare();
         }
         return immo;
     }

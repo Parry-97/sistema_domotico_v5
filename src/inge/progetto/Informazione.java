@@ -113,7 +113,6 @@ public class Informazione implements Serializable,Cloneable{
         this.nome = nome;
     }
 
-    // TODO: 10/04/2020 aggiungere in v3,v4
     public void setValore(Object valore) {
         this.valore = valore;
     }
@@ -131,8 +130,6 @@ public class Informazione implements Serializable,Cloneable{
         this.tipo = tipo;
     }
 
-
-    //TODO: Aggiungere in v3 e v4
     @Override
     protected Object clone() throws CloneNotSupportedException {
         Informazione clone = (Informazione) super.clone();

@@ -69,7 +69,6 @@ public class InformazioneNonNum extends Informazione
         return "[ Nome informazione: " + super.getNome() + " | Rilevazione: " + this.getValore() + " ]";
     }
 
-    // TODO: 10/04/2020 aggiungere in v3,v4
     @Override
     protected Object clone() throws CloneNotSupportedException {
         InformazioneNonNum cloned = (InformazioneNonNum) super.clone();

@@ -44,7 +44,6 @@ public class RuleParser {
 
     /**
      * Viene effettuata la lettura da file per recuperare la lista delle regole create dal fruitore.
-     *
      * @return la lettura delle regole dal file dell'unità immobiliare corrente
      */
     public String readRuleFromFile() {
@@ -173,7 +172,6 @@ public class RuleParser {
 
     /**
      * Il metodo isola una singola azione e la passa al metodo che applica le singole regole.
-     *
      * @param token          sezione di azione da eseguire
      * @param listaAttuatori dell'unità immobiliare sulla quale si stanno effettuando le operazioni
      */
@@ -181,7 +179,7 @@ public class RuleParser {
         for (String tok : token.split(" ; "))
             if (tok.contains("start")) {
                 Date data = getTime(tok.split(" , ")[1].split(" := ")[1]);
-                // TODO: 10/04/2020 togliere if in v4
+
                 this.timer.schedule(new AzioneProgrammata(listaAttuatori, tok.split(" , ")[0]), data);
 
             } else {
@@ -237,7 +235,6 @@ public class RuleParser {
     /**
      * Il metodo utilizza gli operatori logici per separare la stringa delle condizioni e verificare singolarmente le varie operazioni e poi applicare
      * gli operatori logici di AND e OR.
-     *
      * @param cos          è la condizione affinchè una regola si verifichi.
      * @param listaSensori dell'unità immobiliare sulla quale si stanno effettuando le operazioni
      * @return
@@ -387,7 +384,6 @@ public class RuleParser {
 
     /**
      * Il metodo effettua il risultato booleano dell'operazione logica tra i due valori con l'operatore designato.
-     *
      * @param operator è l'operatore per il confronto della regola
      * @param value1   valore di sx dell'operazione
      * @param value2   valore di dx dell'operazione

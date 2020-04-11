@@ -130,11 +130,11 @@ public class Attuatore implements Serializable {
             System.out.println("*** Sei già in questa modalità ***");
             return;
         }
-        //Giusto perche l'utente lo sappia
-        // TODO: 10/04/2020 aggiungere in v3 e v4
+
         if (this.listaComandati.isEmpty()) {
             System.out.println("--- L'attuatore non comanda alcun artefatto! ---");
         }
+
         for (ModalitaOperativa mod : this.getCategoria().getModalita()) {
             if(mod.getValore().equals(nuovaModalita)) {
                 this.modalitaAttuale = nuovaModalita;
@@ -159,8 +159,7 @@ public class Attuatore implements Serializable {
         if(this.modalitaAttuale.equals(nuovaModalita)) {
             System.out.println("+ Sei già in questa modalità +");
         }
-        //Giusto perche l'utente lo sappia (piu importante qua per il problema citato nel DaFarsi sopra citato)
-        // TODO: 10/04/2020 aggiugere in v3,v4
+
         if(this.listaComandati.isEmpty()) {
             System.out.println("--- L'attuatore non comanda alcun artefatto! ---");
         }
@@ -178,7 +177,6 @@ public class Attuatore implements Serializable {
                 }
                 ModalitaOperativa nuovaMod = new ModalitaOperativa(nuovaModalita, nuoviParam);
                  */
-                //TODO: Sostituire al posto di parte sopra in v3,v4
                 try {
                     ModalitaOperativa nuovaMod = (ModalitaOperativa) mod.clone();
                     nuovaMod.setParametro(nomeParametro, valoreParametro);

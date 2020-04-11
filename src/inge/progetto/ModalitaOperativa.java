@@ -107,7 +107,6 @@ public class ModalitaOperativa extends Informazione
         this.parametri = parametri;
     }
 
-    //TODO: Aggiungere in v3, v4
     @Override
     protected Object clone() throws CloneNotSupportedException {
 

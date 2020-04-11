@@ -3,7 +3,7 @@ package inge.progetto;
 import java.util.*;
 
 public class MyTimer extends Timer {
-    // TODO: 10/04/2020 aggiungere tutte le modifiche in v4
+
     private HashMap<String,Date> azioniProgrammate;
 
     public MyTimer(String name) {
