@@ -41,10 +41,10 @@ public class Sensore implements Serializable {
     public Sensore(String nome, CategoriaSensore categoria) {
         this.nome = nome + "_" + categoria.getNome();
         this.categoria = categoria;
-        // TODO: 10/04/2020 aggiungere in v3,v4 
         this.rilevazioni = categoria.getCopiaInfoRilevabili();
         this.statoAttivazione = true;
         this.connesso = false;
+        aggiornaInfo();
     }
 
     /**Fornisce il nome del sensore

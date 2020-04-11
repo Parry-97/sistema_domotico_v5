@@ -45,7 +45,6 @@ public class CategoriaSensore implements Serializable {
         this.nome = nome;
         this.testolibero = testolibero;
         this.fisico = fisico;
-        // TODO: 10/04/2020 mettere in v3,v4
         infoRilevabili = new ArrayList<>();
     }
 
@@ -101,7 +100,6 @@ public class CategoriaSensore implements Serializable {
         return this.infoRilevabili;
     }
 
-    //TODO: Aggiungere in v3,v4
     public ArrayList<Informazione> getCopiaInfoRilevabili() {
         ArrayList<Informazione> newInfos = new ArrayList<>();
 
@@ -140,6 +138,7 @@ public class CategoriaSensore implements Serializable {
     public void setFisico(boolean fisico) {
         this.fisico = fisico;
     }
+
 
 
     @Override

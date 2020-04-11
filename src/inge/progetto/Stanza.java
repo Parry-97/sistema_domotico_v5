@@ -120,7 +120,7 @@ public class Stanza implements Serializable {
             for (Sensore s : listaSensori) {
                 visualizza.append("--Nome Sensore: ").append(s.getNome()).append(", ").append("categoria: ").append(s.getCategoria().getNome()).append(", ").append("rilevazioni: \n");
                 for (Informazione info : s.getRilevazioni()) {
-                    visualizza.append("$").append(info.toString());
+                    visualizza.append("$").append(info.toString()).append("\n");
                 }
             }
         } else
