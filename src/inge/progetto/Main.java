@@ -31,6 +31,8 @@ import java.util.*;
  * @author Parampal Singh, Mattia Nodari
  */
 public class Main {
+    // TODO: 12/04/2020 fai importaRegole
+
 
     public synchronized static void main(String[] args) {
 
@@ -995,10 +997,17 @@ public class Main {
                                         break;
 
                                     case 2:
-                                        listaModalitaOperative = ripristina("Modalita_Operative.ser");
-                                        listaCategoriaSensori = ripristina("Categorie_Sensori.ser");
-                                        listaCategoriaAttuatori = ripristina("Categorie_Attuatori.ser");
-                                        break;
+                                        ArrayList<ModalitaOperativa> tempMods = ripristina("Modalita_Operative.ser");
+                                        tempMods.removeIf(listaModalitaOperative::contains);
+                                        listaModalitaOperative.addAll(tempMods);
+
+                                        ArrayList<CategoriaAttuatore> tempCateAtts = ripristina("Categorie_Attuatori.ser");
+                                        tempCateAtts.removeIf(listaCategoriaAttuatori::contains);
+                                        listaCategoriaAttuatori.addAll(tempCateAtts);
+
+                                        ArrayList<CategoriaSensore> tempCateSens = ripristina("Categorie_Sensori.ser");
+                                        tempCateSens.removeIf(listaCategoriaSensori::contains);
+                                        listaCategoriaSensori.addAll(tempCateSens);
 
                                     case 3:
                                         if (unitaImmobiliare.getTipo().equals("")) {
@@ -1045,8 +1054,6 @@ public class Main {
                                         break;
                                 }
                             } while (sceltaOpzione != 0);
-                            break;
-
                         case 0:
                             System.out.println("USCITA DAL SISTEMA MANUTENTORE.\n");
                             break;

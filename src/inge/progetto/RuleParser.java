@@ -2,6 +2,7 @@ package inge.progetto;
 
 import java.io.*;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static inge.progetto.Main.getOraCorrente;
 
@@ -50,33 +51,132 @@ public class RuleParser {
         return readFromFile(this.fileName);
     }
 
-    private static String readFromFile(String fileName) {
+    public static String readFromFile(String fileName) {
 
-            StringBuilder output = new StringBuilder();
-            boolean presente = new File(fileName).exists();
+        StringBuilder output = new StringBuilder();
+        boolean presente = new File(fileName).exists();
 
-            if (!presente) {
-                return "";
+        if (!presente) {
+            return "";
+        }
+        try {
+            FileReader reader = new FileReader(fileName);
+            BufferedReader bufferedReader = new BufferedReader(reader);
+            String line;
+            while ((line = bufferedReader.readLine()) != null) {
+                output.append(line).append("\n");
             }
-            try {
-                FileReader reader = new FileReader(fileName);
-                BufferedReader bufferedReader = new BufferedReader(reader);
-                String line;
-                while ((line = bufferedReader.readLine()) != null) {
-                    output.append(line).append("\n");
-                }
-                bufferedReader.close();
-                reader.close();
+            bufferedReader.close();
+            reader.close();
 
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            return output.toString();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return output.toString();
+    }
+
+    public void eliminaDoppie() {
+        String[] regole = readRuleFromFile().split("\n");
+        ArrayList<String> regoleList = new ArrayList<>(Arrays.asList(regole));
+
+        List<String> listWithoutDuplicates = regoleList.stream().distinct().collect(Collectors.toList());
+        String regoleModificate = "";
+        for (int i = 0; i < listWithoutDuplicates.size() - 1; i++) {
+            regoleModificate += listWithoutDuplicates.get(i) + "\n";
+        }
+        regoleModificate += listWithoutDuplicates.get(listWithoutDuplicates.size() - 1);
+        writeRuleToFile(regoleModificate, false);
     }
 
     public void importaRegole(String file, ArrayList<Sensore> listaSensori, ArrayList<Attuatore> listaAttuatori) {
-        String[] regoleImport = readFromFile(file).split("");
-        // TODO: 10/04/2020 Sembra essere una menata
+        ArrayList<String> nomiDispPres = new ArrayList<>();
+
+        for (Sensore s : listaSensori) {
+            nomiDispPres.add(s.getNome());
+        }
+
+        for (Attuatore att : listaAttuatori) {
+            nomiDispPres.add(att.getNome());
+        }
+
+        String regoleImport = readFromFile(file);
+
+        if (regoleImport.equals("")) {
+            System.out.println("XX Errore di lettura file. Non sono state inserite regole per l'unita immobiliare XX\n");
+            return;
+        }
+
+        String[] regole = regoleImport.split("\n");
+
+        for (String r : regole) {
+            try {
+                ArrayList<String> dispTrovati = verificaCompRegola(r);
+
+                for (String nomeDis : dispTrovati) {
+                    if (!nomiDispPres.contains(nomeDis)) {
+                        throw new Exception("!!! Dispositivi nella regola non sono disponibili per quest'unita immobiliare \n!!!");
+                    }
+                }
+
+                writeRuleToFile(r, true);
+
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+            }
+
+        }
+        eliminaDoppie();
+    }
+
+    protected ArrayList<String> verificaCompRegola(String regola) throws Exception {
+        // TODO: 12/04/2020 Fare output decente
+
+        String r2 = regola.replace("ENABLED --> IF ","").replace("DISABLED --> IF ","");
+        String[] tokens = r2.split(" THEN ");
+
+        ArrayList<String> nomiDisp = new ArrayList<>();
+
+        String[] condizioni = tokens[0].split("( AND | OR )");
+
+        for (String cond : condizioni) {
+
+            if (cond.equals("true"))
+                continue;
+
+            if (!cond.matches("[^<>=\t\n ]+ ([<>=]|<=|>=) [^<>=\t\n ]+"))
+                throw new Exception("!!! REGOLA NON COMPATIBILE !!!\n");
+
+            String[] operandi = cond.split(" ([><=]|>=|<=) ");
+
+            if (operandi[0].matches("[A-Za-z]([a-zA-Z0-9])*_[A-Za-z]([a-zA-Z0-9])+\\.([a-zA-Z0-9])+(_[A-Za-z][a-zA-Z0-9]*)*"))
+                nomiDisp.add(operandi[0].split("\\.")[0]);
+
+            else if (operandi[0].equals("time"))
+                continue;
+            else
+                throw new Exception("!!! REGOLA NON COMPATIBILE !!!\n");
+
+            if (operandi[1].matches("[A-Za-z]([a-zA-Z0-9])*_[A-Za-z]([a-zA-Z0-9])+\\.([a-zA-Z0-9])+(_[A-Za-z][a-zA-Z0-9]*)*"))
+                nomiDisp.add(operandi[1].split("\\.")[0]);
+
+            else if (!operandi[1].matches("-?[0-9]+") && !operandi[1].matches("([0-1]?[0-9]|2[0-3])(\\.)[0-5]?[0-9]") && !operandi[1].matches("[A-Za-z]+"))
+                throw new Exception("!!! REGOLA NON COMPATIBILE !!!\n");
+        }
+
+        String[] azioni = tokens[1].split(" ; ");
+        for (String az : azioni) {
+
+            if (az.matches("[A-Za-z]([a-zA-Z0-9])*_[A-Za-z]([a-zA-Z0-9])+ := [a-zA-Z0-9]+")) {
+                nomiDisp.add(az.split(" := ")[0]);
+
+            } else if (az.matches("[A-Za-z]([a-zA-Z0-9])*_[A-Za-z]([a-zA-Z0-9])+ := [a-zA-Z0-9]+ , start := ([0-1]?[0-9]|2[0-3])(\\.)[0-5]?[0-9]")) {
+                nomiDisp.add(az.split(" ")[0]);
+            } else {
+                throw new Exception("!!! REGOLA NON COMPATIBILE !!!");
+            }
+        }
+
+        return nomiDisp;
     }
 
     /**
@@ -111,9 +211,11 @@ public class RuleParser {
         }
     }
 
-    private boolean verificaAbilitazione(String regola, ArrayList<Sensore> listaSensori, ArrayList<Attuatore> listaAttuatori) {
+    // TODO: 11/04/2020 magari fare un pattern per il nome del sensore
+    //      Cosi è fin troppo stupido credo
+    protected boolean verificaAbilitazione(String regola, ArrayList<Sensore> listaSensori, ArrayList<Attuatore> listaAttuatori) {
         for (Sensore sens : listaSensori) {
-            if (!sens.isAttivo() && regola.contains(sens.getNome())) {
+            if (!sens.isAttivo() && regola.contains(sens.getNome() + ".")) {
                 return false;
             }
         }
@@ -164,6 +266,7 @@ public class RuleParser {
         }
     }
 
+    // TODO: 11/04/2020 magari fare un pattern per il nome del dispositivo
     public void disabilitaRegolaConDispositivo(String nomeDispositivo) {
         String[] regole = readRuleFromFile().split("\n");
         for (String s : regole) {
@@ -183,6 +286,7 @@ public class RuleParser {
         for (String tok : token.split(" ; "))
             if (tok.contains("start")) {
                 Date data = getTime(tok.split(" , ")[1].split(" := ")[1]);
+                // TODO: 11/04/2020 controllare i maledetti secondi / fare solo confronto di ore e minuti
                 this.timer.schedule(new AzioneProgrammata(listaAttuatori, tok.split(" , ")[0]), data);
 
             } else {
@@ -190,7 +294,7 @@ public class RuleParser {
             }
     }
 
-    private Date getTime(String time) {
+    public static Date getTime(String time) {
         String[] timetokens = time.split("\\.");
         int hour = Integer.parseInt(timetokens[0]);
         int minute = Integer.parseInt(timetokens[1]);
@@ -198,6 +302,8 @@ public class RuleParser {
         Calendar cal = Calendar.getInstance();
         cal.set(Calendar.HOUR_OF_DAY, hour);
         cal.set(Calendar.MINUTE, minute);
+        cal.set(Calendar.SECOND, 0);
+        cal.set(Calendar.MILLISECOND, 0);
         return cal.getTime();
     }
 
@@ -259,6 +365,7 @@ public class RuleParser {
             return evalTimeExp(cos.split(" "));
         }
 
+        // TODO: 11/04/2020 migliorare magari pattern qua?
         if (cos.matches("[^<>=\t\n ]+ ([<>=]|<=|>=) [^<>=\t\n ]+")) {
             String[] expTok = cos.split(" ");
             return getValExp(expTok, listaSensori);
@@ -336,6 +443,7 @@ public class RuleParser {
 
             return evalOp(operator, value, num);
         }
+        // TODO: 11/04/2020 magari semplificare un'po qua..magari salvarlo come Pattern
         if (var2.matches("[A-Za-z]([a-zA-Z0-9])*_[A-Za-z]([a-zA-Z0-9])+\\.([a-zA-Z0-9])+(_[A-Za-z][a-zA-Z0-9]*)*")) {
             String[] sensVar2 = var2.split("\\.");
             Sensore sens2 = null;
