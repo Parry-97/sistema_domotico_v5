@@ -95,7 +95,6 @@ public class CategoriaSensore implements Serializable {
      * @return l'informazione rilevabile da sensori della stessa categoria
      */
 
-    //TODO: Controllare non abbia ripercussioni troppo gravi sul resto del codice ️
     public ArrayList<Informazione> getInfoRilevabili() {
         return this.infoRilevabili;
     }

@@ -31,8 +31,6 @@ import java.util.*;
  * @author Parampal Singh, Mattia Nodari
  */
 public class Main {
-    // TODO: 12/04/2020 fai importaRegole
-
 
     public synchronized static void main(String[] args) {
 
@@ -42,6 +40,7 @@ public class Main {
         ArrayList<CategoriaAttuatore> listaCategoriaAttuatori = new ArrayList<>();
         ArrayList<CategoriaSensore> listaCategoriaSensori = new ArrayList<>();
         int contatoreOperazioni = 0;
+        RuleParser ruleParser = new RuleParser();
 
         String operatore;
 
@@ -54,10 +53,10 @@ public class Main {
                 int caso;
 
                 do {
-                    System.out.println("\n1) CREA O SELEZIONA UNITA' IMMOBILIARE\n2) CREA STANZA\n3) AGGIUNGIA CATEGORIA\n4) CREA ARTEFATTO\n5) CREA NUOVA MODALITA' OPERATIVA\n" +
+                    System.out.println("\n1) CREA O SELEZIONA UNITA' IMMOBILIARE\n2) CREA STANZA\n3) AGGIUNGI CATEGORIA\n4) CREA ARTEFATTO\n5) CREA NUOVA MODALITA' OPERATIVA\n" +
                             "6) CREA ATTUATORE\n7) ASSEGNA MODALITA' OPERATIVA AD UNA CATEGORIA DI ATTUATORI\n8) CREA SENSORE\n" +
                             "9) AGGIUNGI SENSORE E ATTUATORE AD ARTEFATTO\n10) AGGIUNGI ARTEFATTO A STANZA\n11) AGGIUNGI SENSORE A STANZA\n12) MOSTRA RILEVAZIONI DI UN SENSORE\n" +
-                            "13) SETTA NUOVA MODALITA' ATTUATORE\n14) VISUALIZZA TUTTO\n15) VISUALIZZA OPZIONI DI SALVATAGGIO E RIPRISTINO\n0) USCITA\n");
+                            "13) SETTA NUOVA MODALITA' ATTUATORE\n14) VISUALIZZA TUTTO\n15) VISUALIZZA OPZIONI DI SALVATAGGIO E RIPRISTINO\n16) IMPORTA REGOLE\n0) USCITA\n");
 
                     caso = InputDati.leggiIntero("### Seleziona funzionalità: ");
                     switch (caso) {
@@ -97,6 +96,7 @@ public class Main {
                                     listaUnitaImmobiliari.add(temp);
                                     System.out.println("\n*** Unità immobiliare creata correttamente *** ");
                                     unitaImmobiliare = temp;
+                                    ruleParser.setUp(seleziona+".txt");
                                     System.out.println("*** " + unitaImmobiliare.getNome() + " è stata selezionata come unità immobiliare corrente *** ");
                                 }
 
@@ -113,6 +113,7 @@ public class Main {
                                         if (immo.getNome().equals(seleziona)) {
                                             presente = true;
                                             unitaImmobiliare = immo;
+                                            ruleParser.setUp(seleziona+".txt");
                                             break;
                                         }
                                     }
@@ -235,7 +236,7 @@ public class Main {
                                         break;
 
                                         case 0:
-                                            System.out.println("USCITA DAL SISTEMA MANUTENTORE.\n");
+                                            System.out.println("USCITA DALL'OPZIONE DI AGGIUNTA CATEGORIE.\n");
                                             break;
                                             }
                                         } while (opzione != 0);
@@ -1009,6 +1010,8 @@ public class Main {
                                         tempCateSens.removeIf(listaCategoriaSensori::contains);
                                         listaCategoriaSensori.addAll(tempCateSens);
 
+                                        break;
+
                                     case 3:
                                         if (unitaImmobiliare.getTipo().equals("")) {
                                             System.out.println("!!! Unità Immobiliare non creata. E' necessario definirla prima di questa operazione !!!");
@@ -1039,12 +1042,27 @@ public class Main {
                                             break;
                                         }
 
-                                        String nomeUnita = InputDati.leggiStringa("Inserisci il nome dell'unità immobiliare che si deridera ripristinare: ");
+                                        String nomeUnita = InputDati.leggiStringaNonVuota("Inserisci il nome dell'unità immobiliare che si deridera ripristinare: ");
                                         UnitaImmobiliare temp = ripristinaUnita(nomeUnita + ".ser", listaCategoriaSensori, listaCategoriaAttuatori);
 
                                         if(!temp.getTipo().equals("")) {
                                             unitaImmobiliare = temp;
-                                            listaUnitaImmobiliari.add(unitaImmobiliare);
+
+                                            boolean presente = false;
+                                            int i;
+                                            for (i = 0; i < listaUnitaImmobiliari.size(); i++) {
+                                                if(listaUnitaImmobiliari.get(i).getNome().equals(unitaImmobiliare.getNome())) {
+                                                    presente = true;
+                                                    break;
+                                                }
+                                            }
+
+                                            if(!presente)
+                                                listaUnitaImmobiliari.add(unitaImmobiliare);
+                                            else
+                                                listaUnitaImmobiliari.set(i, temp);
+
+                                            ruleParser.setUp(unitaImmobiliare.getNome() + ".txt");
                                         }
 
                                         break;
@@ -1054,15 +1072,36 @@ public class Main {
                                         break;
                                 }
                             } while (sceltaOpzione != 0);
+                            break;
+                        case 16:
+                            if (unitaImmobiliare.getTipo().equals("")) {
+                                System.out.println("!!! Unità Immobiliare non creata. E' necessario definirla prima di questa operazione !!!");
+                                break;
+                            }
+
+                            if (unitaImmobiliare.getListaSensori().isEmpty()) {
+                                System.out.println("!!! Non sono presenti sensori. E' necessario definirli prima di questa operazione !!!");
+                                break;
+                            }
+
+                            if (unitaImmobiliare.getListaAttuatori().isEmpty()) {
+                                System.out.println("!!! Non sono presenti attuatori. E' necessario definirli prima di questa operazione !!!");
+                                break;
+                            }
+
+                            String nomeFile = InputDati.leggiStringaNonVuota("Inserisci il nome del file dal quale importare un corpo di regole: ");
+                            ruleParser.importaRegole(nomeFile, unitaImmobiliare.getListaSensori(), unitaImmobiliare.getListaAttuatori());
+                            break;
+
                         case 0:
                             System.out.println("USCITA DAL SISTEMA MANUTENTORE.\n");
+                            ruleParser.stopTimer();
                             break;
                     }
                 } while (caso != 0);
             } else if (operatore.equals("fruitore")) {
                 int caso;
                 unitaImmobiliare = new UnitaImmobiliare();
-                RuleParser ruleParser = new RuleParser();
 
                 do {
                     if (contatoreOperazioni == 10 && !unitaImmobiliare.getTipo().equals("")) {
@@ -1074,9 +1113,8 @@ public class Main {
                     contatoreOperazioni++;
 
                     System.out.println("\n1) SELEZIONARE UN'UNITA' IMMOBILIARE PER EFFETTUARE LE OPERAZIONI DESIDERATE\n2) MOSTRA RILEVAZIONI DI UN SENSORE\n" +
-                            "3) SETTA NUOVA MODALITA' ATTUATORE\n4) VISUALIZZA TUTTO\n5) CREA NUOVA REGOLA\n6) ABILITA/DISABILITA DISPOSITIVO\n7) ABILITA/DISABILITA REGOLE\n0) USCITA\n");
+                            "3) SETTA NUOVA MODALITA' ATTUATORE\n4) VISUALIZZA TUTTO\n5) CREA NUOVA REGOLA\n6) GESTIONE DISPOSITIVI\n7) ABILITA/DISABILITA REGOLE\n0) USCITA\n");
                     caso = InputDati.leggiIntero("# Seleziona funzionalità: ");
-                    // TODO: 12/04/2020 meglio gestione dispositivi?
                     switch (caso) {
                         case 1:
                             if (listaUnitaImmobiliari.isEmpty()) {

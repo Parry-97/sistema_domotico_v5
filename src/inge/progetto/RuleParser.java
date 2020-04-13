@@ -22,7 +22,8 @@ public class RuleParser {
     }
 
     public void stopTimer() {
-        this.timer.cancel();
+        if(timer != null)
+            this.timer.cancel();
     }
 
     public void writeRuleToFile(String text, boolean append) {
@@ -286,7 +287,6 @@ public class RuleParser {
         for (String tok : token.split(" ; "))
             if (tok.contains("start")) {
                 Date data = getTime(tok.split(" , ")[1].split(" := ")[1]);
-                // TODO: 11/04/2020 controllare i maledetti secondi / fare solo confronto di ore e minuti
                 this.timer.schedule(new AzioneProgrammata(listaAttuatori, tok.split(" , ")[0]), data);
 
             } else {
