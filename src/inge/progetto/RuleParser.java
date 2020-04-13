@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 
 import static inge.progetto.Main.getOraCorrente;
 
+// TODO: 13/04/2020 Fare test generale delle regole
 public class RuleParser {
 
     private String fileName;
@@ -15,7 +16,6 @@ public class RuleParser {
         this.fileName = "";
     }
 
-    // TODO: 09/04/2020 Perche avevo in mente di usare le liste di dispositivi?(Non per Mattia)
     public void setUp(String fileName) {
         this.fileName = fileName;
         this.timer = new MyTimer("TimerThread");
@@ -76,17 +76,41 @@ public class RuleParser {
         return output.toString();
     }
 
-    public void eliminaDoppie() {
-        String[] regole = readRuleFromFile().split("\n");
-        ArrayList<String> regoleList = new ArrayList<>(Arrays.asList(regole));
+    public void eliminaDoppie(ArrayList<Sensore> listaSensori, ArrayList<Attuatore> listaAttuatori) {
+        String lettura = readRuleFromFile();
+        if (lettura.equals(""))
+            return;
 
-        List<String> listWithoutDuplicates = regoleList.stream().distinct().collect(Collectors.toList());
-        String regoleModificate = "";
-        for (int i = 0; i < listWithoutDuplicates.size() - 1; i++) {
-            regoleModificate += listWithoutDuplicates.get(i) + "\n";
+        String[] regole = lettura.split("\n");
+
+
+        ArrayList<String> regoleList = new ArrayList<>(Arrays.asList(regole));
+        ArrayList<String> regoleSenzaAbil = new ArrayList<>();
+
+        for (String reg : regoleList) {
+            regoleSenzaAbil.add(reg.replace("ENABLED --> IF ","").replace("DISABLED --> IF ",""));
         }
-        regoleModificate += listWithoutDuplicates.get(listWithoutDuplicates.size() - 1);
-        writeRuleToFile(regoleModificate, false);
+
+        List<String> listWithoutDuplicates = regoleSenzaAbil.stream().distinct().collect(Collectors.toList());
+        StringBuilder regoleModificate = new StringBuilder();
+
+        for (int i = 0; i < listWithoutDuplicates.size() - 1; i++) {
+
+            if (verificaAbilitazione(listWithoutDuplicates.get(i),listaSensori,listaAttuatori))
+                regoleModificate.append("ENABLED --> IF ");
+            else
+                regoleModificate.append("DISABLED --> IF ");
+
+            regoleModificate.append(listWithoutDuplicates.get(i)).append("\n");
+        }
+
+        if (verificaAbilitazione(listWithoutDuplicates.get(listWithoutDuplicates.size() - 1),listaSensori,listaAttuatori))
+            regoleModificate.append("ENABLED --> IF ");
+        else
+            regoleModificate.append("DISABLED --> IF ");
+
+        regoleModificate.append(listWithoutDuplicates.get(listWithoutDuplicates.size() - 1));
+        writeRuleToFile(regoleModificate.toString(), false);
     }
 
     public void importaRegole(String file, ArrayList<Sensore> listaSensori, ArrayList<Attuatore> listaAttuatori) {
@@ -115,7 +139,7 @@ public class RuleParser {
 
                 for (String nomeDis : dispTrovati) {
                     if (!nomiDispPres.contains(nomeDis)) {
-                        throw new Exception("!!! Dispositivi nella regola non sono disponibili per quest'unita immobiliare \n!!!");
+                        throw new Exception("!!! Dispositivi nella regola non sono disponibili per quest'unita immobiliare !!!\n");
                     }
                 }
 
@@ -126,13 +150,13 @@ public class RuleParser {
             }
 
         }
-        eliminaDoppie();
+        eliminaDoppie(listaSensori,listaAttuatori);
     }
 
     protected ArrayList<String> verificaCompRegola(String regola) throws Exception {
-        // TODO: 12/04/2020 Fare output decente
+        // TODO: 13/04/2020 efficientizzarlo
 
-        String r2 = regola.replace("ENABLED --> IF ","").replace("DISABLED --> IF ","");
+        String r2 = regola.replace("ENABLED --> IF ", "").replace("DISABLED --> IF ", "");
         String[] tokens = r2.split(" THEN ");
 
         ArrayList<String> nomiDisp = new ArrayList<>();
@@ -212,17 +236,22 @@ public class RuleParser {
         }
     }
 
-    // TODO: 11/04/2020 magari fare un pattern per il nome del sensore
-    //      Cosi è fin troppo stupido credo
     protected boolean verificaAbilitazione(String regola, ArrayList<Sensore> listaSensori, ArrayList<Attuatore> listaAttuatori) {
+        ArrayList<String> nomiDisp;
+        try {
+            nomiDisp = verificaCompRegola(regola);
+        } catch (Exception e) {
+            return false;
+        }
+
         for (Sensore sens : listaSensori) {
-            if (!sens.isAttivo() && regola.contains(sens.getNome() + ".")) {
+            if (!sens.isAttivo() && nomiDisp.contains(sens.getNome())) {
                 return false;
             }
         }
 
         for (Attuatore att : listaAttuatori) {
-            if (!att.isAttivo() && regola.contains(att.getNome())) {
+            if (!att.isAttivo() && nomiDisp.contains(att.getNome())) {
                 return false;
             }
         }
@@ -247,7 +276,6 @@ public class RuleParser {
                 break;
             }
         }
-
         String regoleModificate = "";
         for (int i = 0; i < letto.length - 1; i++) {
             regoleModificate += letto[i] + "\n";
@@ -344,6 +372,7 @@ public class RuleParser {
     /**
      * Il metodo utilizza gli operatori logici per separare la stringa delle condizioni e verificare singolarmente le varie operazioni e poi applicare
      * gli operatori logici di AND e OR.
+     *
      * @param cos          è la condizione affinchè una regola si verifichi.
      * @param listaSensori dell'unità immobiliare sulla quale si stanno effettuando le operazioni
      * @return il risultato di una determinata espressione booleana/antecedente
@@ -365,7 +394,6 @@ public class RuleParser {
             return evalTimeExp(cos.split(" "));
         }
 
-        // TODO: 11/04/2020 migliorare magari pattern qua?
         if (cos.matches("[^<>=\t\n ]+ ([<>=]|<=|>=) [^<>=\t\n ]+")) {
             String[] expTok = cos.split(" ");
             return getValExp(expTok, listaSensori);
@@ -495,6 +523,7 @@ public class RuleParser {
 
     /**
      * Il metodo effettua il risultato booleano dell'operazione logica tra i due valori con l'operatore designato.
+     *
      * @param operator è l'operatore per il confronto della regola
      * @param value1   valore di sx dell'operazione
      * @param value2   valore di dx dell'operazione
@@ -525,7 +554,6 @@ public class RuleParser {
         private final String azione;
 
         public AzioneProgrammata(ArrayList<Attuatore> attuatori, String azione) {
-            System.out.println(Thread.currentThread().getName());
             this.attuatori = attuatori;
             this.azione = azione;
         }

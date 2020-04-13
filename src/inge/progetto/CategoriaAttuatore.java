@@ -63,7 +63,6 @@ public class CategoriaAttuatore implements Serializable {
     /**Fornisce l'insieme delle modalit&agrave; operative esibite da attuatori appartenenti alla categoria
      * @return lista di {@link #modalita} operative
      */
-    //TODO: implementare magari modalita.clone come in CateSens (Non per Mattia)
     public ArrayList<ModalitaOperativa> getModalita() {
         return modalita;
     }
