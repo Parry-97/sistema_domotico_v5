@@ -184,7 +184,6 @@ public class RuleParser {
 
                 for (String nomeDis : dispTrovati) {
                     if (!nomiDispPres.contains(nomeDis)) {
-                        // TODO: 13/04/2020 Output Decente
                         throw new Exception("XX Dispositivi Incompatibili all'interno della regola XX\n");
                     }
                 }
@@ -219,7 +218,6 @@ public class RuleParser {
                 continue;
 
             if (!cond.matches("[^<>=\t\n ]+ ([<>=]|<=|>=) [^<>=\t\n ]+"))
-                // TODO: 13/04/2020 output decente
                 throw new Exception("XX Regola non compatibile XX\n");
 
             String[] operandi = cond.split(" ([><=]|>=|<=) ");
