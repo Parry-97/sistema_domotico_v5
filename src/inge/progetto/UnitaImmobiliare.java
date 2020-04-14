@@ -162,6 +162,9 @@ public class UnitaImmobiliare implements Serializable {
 
     }
 
+    /**Aggiunge un {@link Attuatore} all'unita immobiliare
+     * @param a attuatore da aggiungere
+     */
     public void aggiungiAttuatore(Attuatore a) {
         for (Attuatore attuatore : listaAttuatori) {
             if (attuatore.getNome().equals(a.getNome())) {
