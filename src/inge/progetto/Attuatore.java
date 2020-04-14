@@ -23,7 +23,7 @@ public class Attuatore implements Serializable {
     /**
      * Carattestica di associazione ad artefatto
      */
-    private boolean singolo;
+    private final boolean singolo;
     /**
      * lista di artefatto comandato dall'attuatore
      */
@@ -47,6 +47,12 @@ public class Attuatore implements Serializable {
      */
     private boolean statoAttivazione;
 
+    /**Costruttore per un'istanza di Attuatore
+     * @param nome nome dell'attuatore
+     * @param categoria categoria a cui questo appartiene
+     * @param modalitaAttuale la modalit&agrave; operativa default (in formata stringa)
+     * @param singolo caratteristica di associazione
+     */
     public Attuatore(String nome, CategoriaAttuatore categoria, String modalitaAttuale, boolean singolo) {
         this.nome = nome + "_" + categoria.getNome();
         this.categoria = categoria;
@@ -130,10 +136,11 @@ public class Attuatore implements Serializable {
             System.out.println("*** Sei già in questa modalità ***");
             return;
         }
-        //Giusto perche l'utente lo sappia
+
         if (this.listaComandati.isEmpty()) {
             System.out.println("--- L'attuatore non comanda alcun artefatto! ---");
         }
+
         for (ModalitaOperativa mod : this.getCategoria().getModalita()) {
             if(mod.getValore().equals(nuovaModalita)) {
                 this.modalitaAttuale = nuovaModalita;
@@ -152,13 +159,13 @@ public class Attuatore implements Serializable {
      *
      * @param nuovaModalita nome della nuova modalit&agrave; operativa
      * @param nomeParametro nome del nuovo paramentro da settare
-     * @param valoreParametro setta il nuovo valore della modalità paramentrica inserita
+     * @param valoreParametro setta il nuovo valore della modalit&agrave; paramentrica inserita
      */
     public void setModalitaAttuale(String nuovaModalita, String nomeParametro, int valoreParametro) {
         if(this.modalitaAttuale.equals(nuovaModalita)) {
             System.out.println("+ Sei già in questa modalità +");
         }
-        //Giusto perche l'utente lo sappia (piu importante qua per il problema citato nel DaFarsi sopra citato)
+
         if(this.listaComandati.isEmpty()) {
             System.out.println("--- L'attuatore non comanda alcun artefatto! ---");
         }
@@ -206,6 +213,9 @@ public class Attuatore implements Serializable {
         this.statoAttivazione = statoAttivazione;
     }
 
+    /**Permette di conoscere la caratteristica di associzione dell'attuatore
+     * @return true se l'attuatore ha caratteristica di associazione singole, false altrimenti
+     */
     public boolean isSingolo() {
         return singolo;
     }

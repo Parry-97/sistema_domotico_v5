@@ -17,7 +17,7 @@ public class Sensore implements Serializable {
     private String nome;
 
     /** categoria a cui il sensore appartiene (guarda {@link CategoriaSensore})*/
-    private CategoriaSensore categoria;
+    private final CategoriaSensore categoria;
 
     /** informazione o misura che il sensore rileva (guarda {@link Informazione})*/
     private ArrayList<Informazione> rilevazioni;
@@ -100,14 +100,14 @@ public class Sensore implements Serializable {
     }
 
     /**
-     *
-     * Dopo l'aggiornamento dei dati, vengono settate le nuove rilevazioni acquisite.
+     *Permette di sostituire un informazione presente e rilevabile all'interno del sensore con una nuova
+     * @param info1 informazione da sostituire
+     * @param info2 nuova informazione
      */
     public void modificaRilevazione(Informazione info1, Informazione info2) {
         if (rilevazioni.contains(info1))
             rilevazioni.set(rilevazioni.indexOf(info1),info2);
     }
-
     /**
      *
      * @param nome dell'informazione che acquisisce un sensore
@@ -118,7 +118,6 @@ public class Sensore implements Serializable {
             if (info.getNome().equals(nome))
                 return info;
         }
-
         return null;
     }
     /**
@@ -129,6 +128,7 @@ public class Sensore implements Serializable {
         for (Informazione info : this.rilevazioni) {
             if (info instanceof ModalitaOperativa)
                 continue;
+
             info.aggiornaValore();
         }
     }
@@ -139,12 +139,12 @@ public class Sensore implements Serializable {
      */
     @Override
     public String toString() {
-        String visualizza ="Nome sensore: " + this.getNome() + ", rilevazioni effettuate:\n";
+        StringBuilder visualizza = new StringBuilder("Nome sensore: " + this.getNome() + ", rilevazioni effettuate:\n");
         for(Informazione info : this.getRilevazioni()) {
             if(!info.getNome().equals("Modalità Operativa"))
-                visualizza += info.getNome() + info.getValore();
+                visualizza.append(info.getNome()).append(info.getValore()).append("\n");
         }
-        return  visualizza;
+        return visualizza.toString();
     }
 
     /**Permette di sapere se il sensore è gia associato ad un artefatto
@@ -154,10 +154,16 @@ public class Sensore implements Serializable {
         return connesso;
     }
 
+    /**Permette di sapere se il sensore è attivo o meno
+     * @return true se il sensore è attivo, false altrimenti
+     */
     public boolean isAttivo() {
         return statoAttivazione;
     }
 
+    /**Permette di specificare l'abilitazione del sensore, attivarlo o disattivarlo
+     * @param statoAttivazione abilitazione del sensore
+     */
     public void setStatoAttivazione(boolean statoAttivazione) {
         this.statoAttivazione = statoAttivazione;
     }

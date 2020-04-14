@@ -63,7 +63,6 @@ public class CategoriaAttuatore implements Serializable {
     /**Fornisce l'insieme delle modalit&agrave; operative esibite da attuatori appartenenti alla categoria
      * @return lista di {@link #modalita} operative
      */
-    //TODO: implementare magari modalita.clone come in CateSens (Non per Mattia)
     public ArrayList<ModalitaOperativa> getModalita() {
         return modalita;
     }
@@ -98,7 +97,10 @@ public class CategoriaAttuatore implements Serializable {
         return visualizza;
     }
 
-    /*Versione di Intellij*/
+    /**Permette di confrontara con un'istanza CategoriaAttuatore
+     * @param o oggetto con cui confrontare
+     * @return true se le sue 2 istanze sono uguali , false altrimenti
+     */
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

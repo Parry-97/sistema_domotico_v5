@@ -95,11 +95,13 @@ public class CategoriaSensore implements Serializable {
      * @return l'informazione rilevabile da sensori della stessa categoria
      */
 
-    //TODO: Controllare non abbia ripercussioni troppo gravi sul resto del codice ️
     public ArrayList<Informazione> getInfoRilevabili() {
         return this.infoRilevabili;
     }
 
+    /**Fornisce una copia delle informazioni rilevabili dalla categoria di sensori
+     * @return lista di informazioni rilevabili
+     */
     public ArrayList<Informazione> getCopiaInfoRilevabili() {
         ArrayList<Informazione> newInfos = new ArrayList<>();
 
@@ -110,7 +112,8 @@ public class CategoriaSensore implements Serializable {
                 newInfos.add(newInfo);
 
             } catch (CloneNotSupportedException e) {
-                e.printStackTrace();
+                System.out.println("XX Errore durante la creazione della categoria di sensori(: Info Rilevabili) XX\n");
+                return new ArrayList<>();
             }
         }
         return newInfos;
@@ -138,7 +141,6 @@ public class CategoriaSensore implements Serializable {
     public void setFisico(boolean fisico) {
         this.fisico = fisico;
     }
-
 
 
     @Override
