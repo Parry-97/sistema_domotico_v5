@@ -147,6 +147,11 @@ public class Main {
                                         boolean categoriaPresenteSensore = false;
                                         String nomeCategoriaSensore = InputDati.leggiStringaNonVuota("\nInserisci nome della nuova categoria di sensori: ");
 
+                                        if (nomeCategoriaSensore.contains(" ")) {
+                                            System.out.println("!! Errore di inserimento nome, spazi non ammessi !!\n");
+                                            break;
+                                        }
+
                                         for (CategoriaSensore s : listaCategoriaSensori) {
                                             if (s.getNome().equals(nomeCategoriaSensore)) {
                                                 System.out.println("!!! La categoria desiderata è gia stata creata precedentemente !!!");
@@ -218,6 +223,12 @@ public class Main {
                                         break;
                                     case 2:
                                         String nomeCategoriaAttuatore = InputDati.leggiStringaNonVuota("\nInserisci nome della nuova categoria di attuatori: ");
+
+                                        if (nomeCategoriaAttuatore.contains(" ")) {
+                                            System.out.println("!! Errore di inserimento nome, spazi non ammessi !!\n");
+                                            break;
+                                        }
+
                                         boolean categoriaPresenteAttuatore = false;
                                         for (CategoriaAttuatore a : listaCategoriaAttuatori) {
                                             if (a.getNome().equals(nomeCategoriaAttuatore)) {
@@ -253,6 +264,12 @@ public class Main {
                                 break;
                             }
                             String nomeArtefatto = InputDati.leggiStringaNonVuota("\nInserisci nome artefatto: ");
+
+                            if (nomeArtefatto.contains(" ")) {
+                                System.out.println("!! Errore di inserimento nome, spazi non ammessi !!\n");
+                                break;
+                            }
+
                             if (!listaModalitaOperative.isEmpty()) {
                                 System.out.println("...MODALITA' OPERATIVE ATTUALMENTE CREATE...");
                                 for (ModalitaOperativa modalit : listaModalitaOperative) {
@@ -286,6 +303,12 @@ public class Main {
 
                             boolean presenteModalita = false;
                             String nuovaModalita = InputDati.leggiStringaNonVuota("\nInserisci nuova modalità operativa: ");
+
+                            if (nuovaModalita.contains(" ")) {
+                                System.out.println("!! Errore di inserimento nome, spazi non ammessi !!\n");
+                                break;
+                            }
+
                             for (ModalitaOperativa modalita : listaModalitaOperative) {
                                 if (modalita.getValore().equals(nuovaModalita)) {
                                     System.out.println("!!! Modalità operativa già creata precedentemente !!! ");
@@ -338,6 +361,12 @@ public class Main {
 
 
                             String nuovoAttuatore = InputDati.leggiStringaNonVuota("\nInserisci il nome per il nuovo attuatore: ");
+
+                            if (nuovoAttuatore.contains(" ")) {
+                                System.out.println("!! Errore di inserimento nome, spazi non ammessi !!\n");
+                                break;
+                            }
+
                             boolean presenteAttuatore = false;
                             boolean erroreCategoria = true;
                             boolean erroreStato = true;
@@ -469,6 +498,12 @@ public class Main {
 
                             boolean presenzaSensore = false;
                             String nomeSensore = InputDati.leggiStringaNonVuota("\nInserisci il nome del sensore da aggiungere: ");
+
+                            if (nomeSensore.contains(" ")) {
+                                System.out.println("!! Errore di inserimento nome, spazi non ammessi !!\n");
+                                break;
+                            }
+
                             for (Sensore sens : unitaImmobiliare.getListaSensori()) {
                                 if (sens.getNome().equals(nomeSensore + "_" + sens.getCategoria().getNome())) {
                                     System.out.println("!!! Esiste già un sensore con lo stesso nome. E' necessario avere nomi differenti !!!");
