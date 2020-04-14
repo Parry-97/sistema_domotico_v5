@@ -235,6 +235,9 @@ public class UnitaImmobiliare implements Serializable {
         return nome;
     }
 
+    /**
+     * Effettua la rilettura delle rilevazioni di tutti i sensori.
+     */
     public void refreshLetture() {
         if(listaSensori.isEmpty())
             return;
