@@ -1946,6 +1946,11 @@ public class Main {
 
     }
 
+    /** Permette di ripristinare attraverso deserializzazione una lista di oggetti da un file con nome/percorso specificato
+     * @param filename percorso del file da cui ripristianre
+     * @param <T> tipo di dato degli oggetti della lista
+     * @return lista di oggetti ripristinata
+     */
     public static <T> ArrayList<T> ripristina(String filename) {
         FileInputStream in;
         ArrayList<T> list = new ArrayList<>();
@@ -1962,6 +1967,11 @@ public class Main {
         return list;
     }
 
+    /** Permette di salvare permanentemente su file attraverso serializzazione un determinato oggetto
+     * @param obj oggetto da salvare
+     * @param filename nome/percorso del file su cui salvare l'oggetto
+     * @param <T> tipo di dato dell'oggetto
+     */
     public static <T> void salva(T obj, String filename) {
 
         if (obj instanceof List && ((List) obj).isEmpty()) {
@@ -1984,11 +1994,21 @@ public class Main {
     }
 
 
+    /**Permette di ottenere l'ora corrente in formato testuale hh.mm
+     * @return l'ora corrente
+     */
     public static String getOraCorrente() {
         return Calendar.getInstance().get(Calendar.HOUR_OF_DAY) + "." + Calendar.getInstance().get(Calendar.MINUTE);
     }
 
 
+    /**
+     * Permette di ripristinare attraverso deserializzazione la descrizione di un'unita immobiliare, ma solo se compatibile con categorie di sensori e attuatori specificate
+     * @param filename percorso/nome del file da cui ripristinare
+     * @param cateSens categorie di sensori
+     * @param cateAtt categorie di attuatori
+     * @return l'unita immobiliare ripristinata
+     */
     public static UnitaImmobiliare ripristinaUnita(String filename, ArrayList<CategoriaSensore> cateSens, ArrayList<CategoriaAttuatore> cateAtt) {
         FileInputStream in;
         UnitaImmobiliare immo;
@@ -2010,6 +2030,12 @@ public class Main {
         return immo;
     }
 
+    /**Verifica la compatibilita della descrizione di un'unita immobiliare con categorie di attuatori e sensori specificate
+     * @param immo unita immobiliare da verificate
+     * @param cateAtt categorie di attuatori
+     * @param cateSens categorie di sensor
+     * @return true se l'unita immobiliare è compatibile con le categorie specificate, false altrimenti
+     */
     protected static boolean verificaCompatibilita(UnitaImmobiliare immo, ArrayList<CategoriaAttuatore> cateAtt, ArrayList<CategoriaSensore> cateSens) {
         if (cateAtt.isEmpty() || cateSens.isEmpty())
             return false;

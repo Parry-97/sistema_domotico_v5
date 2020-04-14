@@ -57,6 +57,7 @@ public class ModalitaOperativa extends Informazione
         if (parametri.isEmpty()) {
             System.out.println("!!! La modalità operativa non è parametrica !!! Riprova");
             return;
+
         } else if (!parametri.containsKey(nome)) {
             System.out.println("!!! La modalita operativa non ha un parametro con questo nome !!! Riprova");
             return;
@@ -111,7 +112,7 @@ public class ModalitaOperativa extends Informazione
     protected Object clone() throws CloneNotSupportedException {
 
         ModalitaOperativa cloned = (ModalitaOperativa) super.clone();
-        cloned.setValore(""+this.valore);
+        cloned.setValore(""+getValore());
 
         HashMap<String, Integer> nuoviParam = new HashMap<>();
         if (isParametrica()) {

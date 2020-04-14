@@ -97,7 +97,10 @@ public class CategoriaAttuatore implements Serializable {
         return visualizza;
     }
 
-    /*Versione di Intellij*/
+    /**Permette di confrontara con un'istanza CategoriaAttuatore
+     * @param o oggetto con cui confrontare
+     * @return true se le sue 2 istanze sono uguali , false altrimenti
+     */
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

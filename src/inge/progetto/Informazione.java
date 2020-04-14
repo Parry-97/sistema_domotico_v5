@@ -12,6 +12,9 @@ import java.io.Serializable;
 public class Informazione implements Serializable,Cloneable{
 
 
+    /**
+     * nome dell'informazione rilevabile
+     */
     private String nome;
 
     /**
@@ -19,12 +22,19 @@ public class Informazione implements Serializable,Cloneable{
      */
     private String tipo;
 
+    /**
+     * valore corrente assunto dall'informazione rilevabile
+     */
     protected Object valore;
 
-    /**rappresentano il range/dominio entro cui cade il valore dell'informazione; hanno già dei
-     * valori di default che possono poi essere modificati dal manutentore
+    /**
+     * estremo superiore del range/dominio dell'informazione
      */
     private int  VALORE_MAX = Integer.MAX_VALUE;
+
+    /**
+     * estremo superiore del range/dominio dell'informazione
+     */
     private int VALORE_MIN = 0;
 
 
@@ -64,11 +74,14 @@ public class Informazione implements Serializable,Cloneable{
         this.VALORE_MIN = VALORE_MIN;
     }
 
+    /**
+     * Genera un nuovo valore/misura assunto dall'informazione,un valore casuale numerico che cade entro il dominio specificato
+     */
     public void aggiornaValore() {
         this.valore =  (int) (Math.random() * (this.VALORE_MAX - this.VALORE_MIN) + this.VALORE_MIN);
     }
 
-    /**Fornisce la misura/valore dell'informazione, un valore casuale numerico che cade entro il dominio specificato
+    /**Fornisce la misura/valore attuale dell'informazione
      * @return valore numerico dell'informazione
      */
     public Object getValore(){
@@ -102,6 +115,9 @@ public class Informazione implements Serializable,Cloneable{
         this.nome = nome;
     }
 
+    /**Permette di specificare manualmente il valore assunto dall'informazione
+     * @param valore nuovo valore che l'informazione assume
+     */
     public void setValore(Object valore) {
         this.valore = valore;
     }
@@ -111,10 +127,16 @@ public class Informazione implements Serializable,Cloneable{
         return "[" + this.nome + " : " + this.getValore() + "]";
     }
 
+    /**Restituisce il tipo dell'informazione
+     * @return il tipo dell'informazione(N = numerica, NN = non numerica)
+     */
     public String getTipo() {
         return tipo;
     }
 
+    /**Permette di specificare il tipo dell'informazione
+     * @param tipo nuovo tipo dell'informazione
+     */
     public void setTipo(String tipo) {
         this.tipo = tipo;
     }

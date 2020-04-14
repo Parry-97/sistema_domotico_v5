@@ -23,7 +23,7 @@ public class Attuatore implements Serializable {
     /**
      * Carattestica di associazione ad artefatto
      */
-    private boolean singolo;
+    private final boolean singolo;
     /**
      * lista di artefatto comandato dall'attuatore
      */
@@ -47,6 +47,12 @@ public class Attuatore implements Serializable {
      */
     private boolean statoAttivazione;
 
+    /**Costruttore per un'istanza di Attuatore
+     * @param nome nome dell'attuatore
+     * @param categoria categoria a cui questo appartiene
+     * @param modalitaAttuale la modalit&agrave; operativa default (in formata stringa)
+     * @param singolo caratteristica di associazione
+     */
     public Attuatore(String nome, CategoriaAttuatore categoria, String modalitaAttuale, boolean singolo) {
         this.nome = nome + "_" + categoria.getNome();
         this.categoria = categoria;
@@ -153,7 +159,7 @@ public class Attuatore implements Serializable {
      *
      * @param nuovaModalita nome della nuova modalit&agrave; operativa
      * @param nomeParametro nome del nuovo paramentro da settare
-     * @param valoreParametro setta il nuovo valore della modalità paramentrica inserita
+     * @param valoreParametro setta il nuovo valore della modalit&agrave; paramentrica inserita
      */
     public void setModalitaAttuale(String nuovaModalita, String nomeParametro, int valoreParametro) {
         if(this.modalitaAttuale.equals(nuovaModalita)) {
@@ -164,19 +170,10 @@ public class Attuatore implements Serializable {
             System.out.println("--- L'attuatore non comanda alcun artefatto! ---");
         }
 
-        //TODO: Implementare magari con un metodo getModalita che usa clone per cateAtt come cateSens(Non per Mattia)
         for (ModalitaOperativa mod : this.getCategoria().getModalita()) {
             if(mod.getValore().equals(nuovaModalita)) {
                 this.modalitaAttuale = nuovaModalita;
 
-                /*HashMap<String, Integer> nuoviParam = new HashMap<>();
-                HashMap<String,Integer> vecchiParam = mod.getParametri();
-
-                for (String key : vecchiParam.keySet()) {
-                    nuoviParam.put(key,vecchiParam.get(key));
-                }
-                ModalitaOperativa nuovaMod = new ModalitaOperativa(nuovaModalita, nuoviParam);
-                 */
                 try {
                     ModalitaOperativa nuovaMod = (ModalitaOperativa) mod.clone();
                     nuovaMod.setParametro(nomeParametro, valoreParametro);
@@ -216,6 +213,9 @@ public class Attuatore implements Serializable {
         this.statoAttivazione = statoAttivazione;
     }
 
+    /**Permette di conoscere la caratteristica di associzione dell'attuatore
+     * @return true se l'attuatore ha caratteristica di associazione singole, false altrimenti
+     */
     public boolean isSingolo() {
         return singolo;
     }

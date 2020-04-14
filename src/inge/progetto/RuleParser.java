@@ -6,26 +6,54 @@ import java.util.stream.Collectors;
 
 import static inge.progetto.Main.getOraCorrente;
 
-// TODO: 13/04/2020 Fare test generale delle regole
+/**
+ * Classe di utility usata per le varie operazioni di gestione delle regole, che esse vengano importate o generate interattivamente da un utente.
+ * Si occupa di salvataggio permanente delle regole o di ripristino/lettura da file per l'utente che interagisce con i vari componenti del sistema come unita immobiliari o dispositivi
+ * come sensori o attuatori . Inoltre è possibile anche importare infatti regole da file esterni purchè queste siano compatibili con la descrizione
+ * precedentemente fornita del sistema e che rispettino la grammatica e sintassi del sistema.
+ * Svolge appunto la funzione di parsing, ovvero traduce il formato testuale delle regole assegnate/inserite dall'utente in comandi o azioni con le
+ * quali modifica la configurazione di una determinata unita immobiliare agendo su singoli sensori e attuatori in essa presenti.
+ */
 public class RuleParser {
 
+    /**
+     * percorso del file con cui lavora il rule parser
+     */
     private String fileName;
+
+    /**
+     * timer usato per azioni programmate nel tempo
+     * @see Timer
+     */
     private MyTimer timer;
 
+    /**
+     * Costruttore per un'istanza RuleParser
+     */
     public RuleParser() {
         this.fileName = "";
     }
 
+    /**Permette di specificare il percorso del file da cui estrarre le regole
+     * @param fileName percorso del file
+     */
     public void setUp(String fileName) {
         this.fileName = fileName;
         this.timer = new MyTimer("TimerThread");
     }
 
+    /**
+     * Cancella tutte le attività precedentemente programmate se presenti
+     */
     public void stopTimer() {
         if(timer != null)
             this.timer.cancel();
     }
 
+    /**Permette la scrittura di regola/e nel file dal percorso specficato in modo da salvare permanentemente
+     * @param text regola/e che si desiderano salvare
+     * @param append flag per decidere se sovrascivere il file o scrivere in coda
+     */
     public void writeRuleToFile(String text, boolean append) {
         if (fileName.isEmpty())
             return;
@@ -45,13 +73,16 @@ public class RuleParser {
 
     /**
      * Viene effettuata la lettura da file per recuperare la lista delle regole create dal fruitore.
-     *
      * @return la lettura delle regole dal file dell'unità immobiliare corrente
      */
     public String readRuleFromFile() {
         return readFromFile(this.fileName);
     }
 
+    /**Legge da file con percorso specificato
+     * @param fileName percorso del file da cui leggere
+     * @return lettura dal file specificato
+     */
     public static String readFromFile(String fileName) {
 
         StringBuilder output = new StringBuilder();
@@ -76,8 +107,13 @@ public class RuleParser {
         return output.toString();
     }
 
+    /**Elimina eventuali regole doppie e verifica e cambia se necessario l'abilitazione delle regole salvate
+     * @param listaSensori lista di sensori con cui verificare l'abilitazione della regola
+     * @param listaAttuatori lista di attuatori con cui verificare l'abilitazione della regola
+     */
     public void eliminaDoppie(ArrayList<Sensore> listaSensori, ArrayList<Attuatore> listaAttuatori) {
         String lettura = readRuleFromFile();
+
         if (lettura.equals(""))
             return;
 
@@ -113,6 +149,13 @@ public class RuleParser {
         writeRuleToFile(regoleModificate.toString(), false);
     }
 
+    /**
+     * Importa regole da un file esterno specificatp dall'utente, solo quelle effettivamente compatibili con
+     * le liste di dispositivi assegnati
+     * @param file percorso del file da cui importare
+     * @param listaSensori lista di sensori con cui verificare compatibilita della regola
+     * @param listaAttuatori lista di attuatori con cui verificare compatibilita della regola
+     */
     public void importaRegole(String file, ArrayList<Sensore> listaSensori, ArrayList<Attuatore> listaAttuatori) {
         ArrayList<String> nomiDispPres = new ArrayList<>();
 
@@ -139,6 +182,7 @@ public class RuleParser {
 
                 for (String nomeDis : dispTrovati) {
                     if (!nomiDispPres.contains(nomeDis)) {
+                        // TODO: 13/04/2020 Output Decente
                         throw new Exception("!!! Dispositivi nella regola non sono disponibili per quest'unita immobiliare !!!\n");
                     }
                 }
@@ -153,8 +197,12 @@ public class RuleParser {
         eliminaDoppie(listaSensori,listaAttuatori);
     }
 
+    /** Verifica la compatibilità sintattica della regola e ne restituisce una lista di nomi dei dispositivi in essa presenti
+     * @param regola regola da controllare
+     * @return lista di nomi dei dispositivi presenti nella regola
+     * @throws Exception in caso di errore sintattico nella regola
+     */
     protected ArrayList<String> verificaCompRegola(String regola) throws Exception {
-        // TODO: 13/04/2020 efficientizzarlo
 
         String r2 = regola.replace("ENABLED --> IF ", "").replace("DISABLED --> IF ", "");
         String[] tokens = r2.split(" THEN ");
@@ -169,6 +217,7 @@ public class RuleParser {
                 continue;
 
             if (!cond.matches("[^<>=\t\n ]+ ([<>=]|<=|>=) [^<>=\t\n ]+"))
+                // TODO: 13/04/2020 output decente
                 throw new Exception("!!! REGOLA NON COMPATIBILE !!!\n");
 
             String[] operandi = cond.split(" ([><=]|>=|<=) ");
@@ -236,6 +285,12 @@ public class RuleParser {
         }
     }
 
+    /** Verifica che la regola possa essere considerata abilitata o meno a seconda che abbia tutti dispositivi(attuatori e sensori) attivi
+     * @param regola regoal da verificare
+     * @param listaSensori lista di sensori con cui verificare l'abilitazione della regola
+     * @param listaAttuatori lista di sensori con cui verificare l'abilitazione della regola
+     * @return true se la regola è abilitata, false altrimenti
+     */
     protected boolean verificaAbilitazione(String regola, ArrayList<Sensore> listaSensori, ArrayList<Attuatore> listaAttuatori) {
         ArrayList<String> nomiDisp;
         try {
@@ -258,6 +313,10 @@ public class RuleParser {
         return true;
     }
 
+    /**Permette di cambiare l'abilitazione della regola specificata
+     * @param target regola da abilitare o meno
+     * @param abil abilitazione (false = disabilitata, true = abilitata)
+     */
     public void cambiaAbilitazioneRegola(String target, boolean abil) {
         String[] letto = readRuleFromFile().split("\n");
 
@@ -284,21 +343,51 @@ public class RuleParser {
         writeRuleToFile(regoleModificate, false);
     }
 
+    /** Abilita regole che contengono il dispositivo dal nome specificato
+     * @param nomeDispositivo nome del dispositivo abilitante
+     * @param listaSensori lista di sensori con cui verificare l'abilitazione della regola
+     * @param listaAttuatori lista di sensori con cui verificare l'abilitazione della regola
+     */
     public void abilitaRegoleconDispositivo(String nomeDispositivo, ArrayList<Sensore> listaSensori, ArrayList<Attuatore> listaAttuatori) {
         String[] regole = readRuleFromFile().split("\n");
+
         for (String s : regole) {
-            if (s.contains(nomeDispositivo)) {
-                if (verificaAbilitazione(s, listaSensori, listaAttuatori)) {
-                    cambiaAbilitazioneRegola(s, true);
+            try {
+                ArrayList<String> disps = verificaCompRegola(s);
+
+                if (disps.contains(nomeDispositivo)) {
+                    cambiaAbilitazioneRegola(s,false);
                 }
+
+            } catch (Exception e) {
+                String msg = e.getMessage();
+            }
+
+            if (s.contains(nomeDispositivo) && verificaAbilitazione(s,listaSensori,listaAttuatori)) {
+                cambiaAbilitazioneRegola(s, true);
             }
         }
     }
 
-    // TODO: 11/04/2020 magari fare un pattern per il nome del dispositivo
+
+    /**
+     * Disabilita regole che contengono il dispositivo dal nome specificato
+     * @param nomeDispositivo nome del dispositivo disabilitante
+     */
     public void disabilitaRegolaConDispositivo(String nomeDispositivo) {
         String[] regole = readRuleFromFile().split("\n");
         for (String s : regole) {
+            try {
+                ArrayList<String> disps = verificaCompRegola(s);
+
+                if (disps.contains(nomeDispositivo)) {
+                    cambiaAbilitazioneRegola(s,false);
+                }
+
+            } catch (Exception e) {
+                String msg = e.getMessage();
+            }
+
             if (s.contains(nomeDispositivo)) {
                 cambiaAbilitazioneRegola(s, false);
             }
@@ -322,6 +411,10 @@ public class RuleParser {
             }
     }
 
+    /**Permette di ottenere ora da formato testuale hh.mm
+     * @param time formato testuale dell'ora
+     * @return istanza di {@link Date} che si puo utilizzare per programmare azioni
+     */
     public static Date getTime(String time) {
         String[] timetokens = time.split("\\.");
         int hour = Integer.parseInt(timetokens[0]);
@@ -403,6 +496,10 @@ public class RuleParser {
 
     }
 
+    /**Valuta una disuglianza temporale, un confronto tra misure temporale: time(valore corrente) op(operatore) time2(istante temporale specificato)
+     * @param expTok disuguaglianza temporale da valutare
+     * @return il risultato della disuguaglianza
+     */
     private boolean evalTimeExp(String[] expTok) {
         Date currentDate = Calendar.getInstance().getTime();
         Date confDate = getTime(expTok[2]);
@@ -428,12 +525,12 @@ public class RuleParser {
 
     /**
      * Il metodo viene usato per acquisire i valori dei sensori in gioco e per confrontare l'effettiva operazione tra due sensori o tra un sensore e un valore numerico costante
-     * o un astringa nel caso di un'informazione non numerica
+     * o una stringa nel caso di un'informazione non numerica
      *
      * @param listaSensori dell'unità immobiliare sulla quale si stanno effettuando le operazioni
+     * @param toks componenti dell'espressione da valutare
      * @return il risultato dell'operazione in termini di true se le operazioni sono verificate altrimenti false se sono false
      */
-
     private boolean getValExp(String[] toks, ArrayList<Sensore> listaSensori) {
         String var1 = toks[0];
         String operator = toks[1];
@@ -471,7 +568,7 @@ public class RuleParser {
 
             return evalOp(operator, value, num);
         }
-        // TODO: 11/04/2020 magari semplificare un'po qua..magari salvarlo come Pattern
+
         if (var2.matches("[A-Za-z]([a-zA-Z0-9])*_[A-Za-z]([a-zA-Z0-9])+\\.([a-zA-Z0-9])+(_[A-Za-z][a-zA-Z0-9]*)*")) {
             String[] sensVar2 = var2.split("\\.");
             Sensore sens2 = null;
@@ -548,16 +645,35 @@ public class RuleParser {
         }
     }
 
+    /**
+     * Classe innestata utilizzata per definire un'azione programmata in un istante temporale futuro specificato all'interno di una regola.
+     * Ad esempio, l’azione (a1_attLuciEsterne := spegnimento, start := 6.00) assegna la modalità di spegnimento all’attuatore a1 della
+     * categoria attLuciEsterne esattamente alle ore 6.00. Il sistema 'mette in coda' tale azione e la esegue esattamente all'ora specificata
+     */
     public class AzioneProgrammata extends TimerTask {
 
+        /**
+         * Attuatori con cui interagisce l'azione
+         */
         private final ArrayList<Attuatore> attuatori;
+
+        /**
+         * azione da eseguire specificata dall'utente
+         */
         private final String azione;
 
+        /**Costruttore di un'istanza Azione Programmata
+         * @param attuatori attuatori su cui agisce l'azione/assegnamentp
+         * @param azione azione da eseguire
+         */
         public AzioneProgrammata(ArrayList<Attuatore> attuatori, String azione) {
             this.attuatori = attuatori;
             this.azione = azione;
         }
 
+        /**Permette di ottenere in formato avviamente testuale l'azione da eseguire specificata dall'utente
+         * @return azione da eseguire
+         */
         public String getAzione() {
             return azione;
         }

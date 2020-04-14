@@ -11,9 +11,16 @@ import java.util.Arrays;
  * non collocati in una stanza(es. cancello).
  *
  * @see ModalitaOperativa
+ * @see Attuatore
+ * @see Sensore
+ *
  * @author Parampal Singh, Mattia Nodari
  */
 public class Artefatto implements Serializable {
+
+    /**
+     * nome dell'artefatto
+     */
     private String nome;
     /**
      * Rappresenta lo 'stato attuale' dell'artefatto, monitorato da sensori({@link #listaSensori}) e comandato

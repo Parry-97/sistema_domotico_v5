@@ -43,6 +43,9 @@ public class InformazioneNonNum extends Informazione
         super.setVALORE_MAX(dominioNonNumerico.size());
     }
 
+    /**Permette di specificare il dominio non numerico scalare dell'informazione
+     * @param dominioNonNumerico il dominio non numerico dell'informazione
+     */
     public void setDominioNonNumerico(ArrayList<String> dominioNonNumerico) {
         this.dominioNonNumerico = dominioNonNumerico;
         super.setVALORE_MAX(dominioNonNumerico.size());
@@ -53,6 +56,9 @@ public class InformazioneNonNum extends Informazione
         super.aggiornaValore();
     }
 
+    /**Fornisce un valore scalare casuale tra quelli specificati nel dominio
+     * @return valore scalare casuale
+     */
     @Override
     public String getValore() {
         return  this.dominioNonNumerico.get((Integer) super.getValore());

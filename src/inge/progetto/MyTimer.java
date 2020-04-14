@@ -2,15 +2,28 @@ package inge.progetto;
 
 import java.util.*;
 
+/**
+ * Sottoclasse custom di Timer utilizzata per azioni/assegnamenti programmati dettati da regola
+ */
 public class MyTimer extends Timer {
+
+    /**
+     * collezione di azioni programmate che devono ancora essere eseguite
+     */
     private final HashMap<Date, String> azioniProgrammate;
 
+    /**Costruttore di un istanza
+     * @param name nome del thread del timer
+     */
     public MyTimer(String name) {
         super(name);
         this.azioniProgrammate = new HashMap<>();
     }
 
-    //TODO: Testare con esecuzione codice
+    /**Schedula/programma l'azione da eseguire all'ora specificata
+     * @param task azione da schedulare
+     * @param time ora a cui l'azione deve essere eseguita
+     */
     public void schedule(RuleParser.AzioneProgrammata task, Date time) {
 
         if (time.compareTo(Calendar.getInstance().getTime()) < 0)
@@ -34,6 +47,9 @@ public class MyTimer extends Timer {
         }
     }
 
+    /**Elimina azione specificata da quelle ancora in coda
+     * @param azione azione da eliminare
+     */
     public void eliminaTask(String azione) {
         for (Map.Entry<Date, String> entry : azioniProgrammate.entrySet()) {
             if (entry.getValue().equals(azione)) {

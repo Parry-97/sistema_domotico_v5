@@ -38,6 +38,9 @@ public class UnitaImmobiliare implements Serializable {
      */
     private String tipo;
 
+    /**
+     * nome dell'unita immobiliare
+     */
     private String nome;
 
     /**Costruttore per specifica di un oggetto UnitaImmobiliare
