@@ -13,6 +13,8 @@ import static inge.progetto.Main.getOraCorrente;
  * precedentemente fornita del sistema e che rispettino la grammatica e sintassi del sistema.
  * Svolge appunto la funzione di parsing, ovvero traduce il formato testuale delle regole assegnate/inserite dall'utente in comandi o azioni con le
  * quali modifica la configurazione di una determinata unita immobiliare agendo su singoli sensori e attuatori in essa presenti.
+ *
+ * @author Parampal Singh, Mattia Nodari
  */
 public class RuleParser {
 
@@ -182,11 +184,10 @@ public class RuleParser {
 
                 for (String nomeDis : dispTrovati) {
                     if (!nomiDispPres.contains(nomeDis)) {
-                        // TODO: 13/04/2020 Output Decente
                         throw new Exception("!!! Dispositivi nella regola non sono disponibili per quest'unita immobiliare !!!\n");
                     }
                 }
-
+                System.out.println("*** Importazione della regola avvenuta con successo ***");
                 writeRuleToFile(r, true);
 
             } catch (Exception e) {
@@ -217,8 +218,7 @@ public class RuleParser {
                 continue;
 
             if (!cond.matches("[^<>=\t\n ]+ ([<>=]|<=|>=) [^<>=\t\n ]+"))
-                // TODO: 13/04/2020 output decente
-                throw new Exception("!!! REGOLA NON COMPATIBILE !!!\n");
+                throw new Exception("XX Regola non compatibile XX\n");
 
             String[] operandi = cond.split(" ([><=]|>=|<=) ");
 
@@ -228,13 +228,13 @@ public class RuleParser {
             else if (operandi[0].equals("time"))
                 continue;
             else
-                throw new Exception("!!! REGOLA NON COMPATIBILE !!!\n");
+                throw new Exception("XX Regola non compatibile XX\n");
 
             if (operandi[1].matches("[A-Za-z]([a-zA-Z0-9])*_[A-Za-z]([a-zA-Z0-9])+\\.([a-zA-Z0-9])+(_[A-Za-z][a-zA-Z0-9]*)*"))
                 nomiDisp.add(operandi[1].split("\\.")[0]);
 
             else if (!operandi[1].matches("-?[0-9]+") && !operandi[1].matches("([0-1]?[0-9]|2[0-3])(\\.)[0-5]?[0-9]") && !operandi[1].matches("[A-Za-z]+"))
-                throw new Exception("!!! REGOLA NON COMPATIBILE !!!\n");
+                throw new Exception("XX Regola non compatibile XX\n");
         }
 
         String[] azioni = tokens[1].split(" ; ");
@@ -246,7 +246,7 @@ public class RuleParser {
             } else if (az.matches("[A-Za-z]([a-zA-Z0-9])*_[A-Za-z]([a-zA-Z0-9])+ := [a-zA-Z0-9]+ , start := ([0-1]?[0-9]|2[0-3])(\\.)[0-5]?[0-9]")) {
                 nomiDisp.add(az.split(" ")[0]);
             } else {
-                throw new Exception("!!! REGOLA NON COMPATIBILE !!!");
+                throw new Exception("XX Regola non compatibile XX\n");
             }
         }
 

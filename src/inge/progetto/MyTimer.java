@@ -4,6 +4,7 @@ import java.util.*;
 
 /**
  * Sottoclasse custom di Timer utilizzata per azioni/assegnamenti programmati dettati da regola
+ * @author Parampal Singh, Mattia Nodari
  */
 public class MyTimer extends Timer {
 
