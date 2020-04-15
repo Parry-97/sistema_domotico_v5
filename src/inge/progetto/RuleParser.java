@@ -183,11 +183,26 @@ public class RuleParser {
                 ArrayList<String> dispTrovati = verificaCompRegola(r);
 
                 for (String nomeDis : dispTrovati) {
-                    if (!nomiDispPres.contains(nomeDis)) {
-                        throw new Exception("!!! Dispositivi nella regola non sono disponibili per quest'unita immobiliare !!!\n");
+                    if (nomeDis.contains(".")){
+                        String nomeS = nomeDis.split("\\.")[0];
+
+                        if (!nomiDispPres.contains(nomeS)) {
+                            throw new Exception("XX Dispositivi Incompatibili all'interno della regola XX\n");
+                        }
+
+                        Sensore s = listaSensori.stream().filter(sensore -> sensore.getNome().equals(nomeS)).iterator().next();
+                        String nomeInfo = nomeDis.split("\\.")[1];
+
+                        if (s.getInformazione(nomeInfo) == null)
+                            throw new Exception("XX Regola non compatibile XX\n");
+
+
+                    } else if (!nomiDispPres.contains(nomeDis)) {
+                        throw new Exception("XX Dispositivi Incompatibili all'interno della regola XX\n");
+
                     }
                 }
-                System.out.println("*** Importazione della regola avvenuta con successo ***");
+                System.out.println("*** Importazione della regola avvenuta con successo ***\n");
                 writeRuleToFile(r, true);
 
             } catch (Exception e) {
@@ -223,7 +238,7 @@ public class RuleParser {
             String[] operandi = cond.split(" ([><=]|>=|<=) ");
 
             if (operandi[0].matches("[A-Za-z]([a-zA-Z0-9])*_[A-Za-z]([a-zA-Z0-9])+\\.([a-zA-Z0-9])+(_[A-Za-z][a-zA-Z0-9]*)*"))
-                nomiDisp.add(operandi[0].split("\\.")[0]);
+                nomiDisp.add(operandi[0]);
 
             else if (operandi[0].equals("time"))
                 continue;
@@ -231,7 +246,7 @@ public class RuleParser {
                 throw new Exception("XX Regola non compatibile XX\n");
 
             if (operandi[1].matches("[A-Za-z]([a-zA-Z0-9])*_[A-Za-z]([a-zA-Z0-9])+\\.([a-zA-Z0-9])+(_[A-Za-z][a-zA-Z0-9]*)*"))
-                nomiDisp.add(operandi[1].split("\\.")[0]);
+                nomiDisp.add(operandi[1]);
 
             else if (!operandi[1].matches("-?[0-9]+") && !operandi[1].matches("([0-1]?[0-9]|2[0-3])(\\.)[0-5]?[0-9]") && !operandi[1].matches("[A-Za-z]+"))
                 throw new Exception("XX Regola non compatibile XX\n");
@@ -245,7 +260,7 @@ public class RuleParser {
 
             } else if (az.matches("[A-Za-z]([a-zA-Z0-9])*_[A-Za-z]([a-zA-Z0-9])+ := [a-zA-Z0-9]+ , start := ([0-1]?[0-9]|2[0-3])(\\.)[0-5]?[0-9]")) {
                 nomiDisp.add(az.split(" ")[0]);
-            } else if (az.matches("[A-Za-z]([a-zA-Z0-9])*_[A-Za-z]([a-zA-Z0-9])+ := [a-zA-Z0-9]|[a-zA-Z0-9]+|-?[0-9]+")) {
+            } else if (az.matches("[A-Za-z]([a-zA-Z0-9])*_[A-Za-z]([a-zA-Z0-9])+ := [a-zA-Z0-9]+\\|[a-zA-Z0-9]+\\|-?[0-9]+")) {
                 nomiDisp.add(az.split(" ")[0]);
 
             } else {
