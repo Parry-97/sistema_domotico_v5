@@ -1,0 +1,6 @@
+ENABLED --> IF t1_termometro.temperatura > 20 AND t1_termometro.pressione > 95 THEN a1_interruttoreLampada := on
+ENABLED --> IF t2_termometro.temperatura >= 20 OR t1_termometro.temperatura >= 20 THEN a1_interruttoreLampada := on ; a2_interruttoreLampada := on
+ENABLED --> IF true THEN termo1_termoregolatore := mantenimentoTemperatura|temperaturaDesiderata|22
+DISABLED --> IF time < 17.00 THEN a3_interruttoreCancello := chiuso
+ENABLED --> IF v1_telecamera.video = presenzaPersone THEN a2_interruttoreLampada := on , start := 19.00
+regola non compatibile
