@@ -245,6 +245,9 @@ public class RuleParser {
 
             } else if (az.matches("[A-Za-z]([a-zA-Z0-9])*_[A-Za-z]([a-zA-Z0-9])+ := [a-zA-Z0-9]+ , start := ([0-1]?[0-9]|2[0-3])(\\.)[0-5]?[0-9]")) {
                 nomiDisp.add(az.split(" ")[0]);
+            } else if (az.matches("[A-Za-z]([a-zA-Z0-9])*_[A-Za-z]([a-zA-Z0-9])+ := [a-zA-Z0-9]|[a-zA-Z0-9]+|-?[0-9]+")) {
+                nomiDisp.add(az.split(" ")[0]);
+
             } else {
                 throw new Exception("XX Regola non compatibile XX\n");
             }
